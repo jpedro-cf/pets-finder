@@ -1,0 +1,13 @@
+torch
+torchvision
+ftfy
+regex
+tqdm
+numpy
+pillow
+boto3
+pika
+python-dotenv
+pymilvus
+redis
+git+https://github.com/openai/CLIP.git
