@@ -59,14 +59,13 @@ class MilvusDatabase(VectorDatabase):
             res = self.collection.upsert(
                 [
                     {
-                        "id": metadata.get("object_key"),
+                        "id": metadata["object_key"],
                         "vector": vector,
-                        "color": metadata.get("color"),
-                        "type": metadata.get("type"),
+                        "color": metadata["color"],
+                        "type": metadata["type"],
                     },
                 ],
             )
-            self.collection.flush()
             return res
         except Exception as e:
             print(e)
@@ -75,24 +74,30 @@ class MilvusDatabase(VectorDatabase):
     def search(self, query, top_k, metadata):
         try:
             search_params = {"metric_type": "L2", "params": {"nprobe": 10}}
+
+            expression = f'id != "{metadata["id"]}"'
+            if "type" in metadata:
+                expression += f' and type == "{metadata["type"]}"'
+
             res = self.collection.search(
                 data=[query],
-                expr=f'id != "{metadata["id"]}"',
-                filter=f'type == "{metadata["type"]}"',
+                expr=expression,
                 anns_field="vector",
                 param=search_params,
-                limit=4,
-                output_fields=["id", "vector", "type"],
+                limit=top_k,
+                output_fields=["id", "type"],
             )
-            structured_results = []
-
+            structured_response = []
             for hits in res:
                 for hit in hits:
-                    structured_results.append(
-                        [hit.id, hit.distance, hit.entity.vector, hit.entity.type]
+                    structured_response.append(
+                        {
+                            "id": hit.id,
+                            "type": hit.entity.type,
+                            "score": hit.entity.distance,
+                        }
                     )
-
-            return structured_results
+            return structured_response
         except Exception as e:
             print(e)
 

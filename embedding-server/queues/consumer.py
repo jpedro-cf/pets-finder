@@ -43,25 +43,21 @@ class QueueConsumer:
         try:
             data = json.loads(body.decode("utf-8"))
 
-            image = self.object_storage.download_image(data.get("object_key"))
+            image = self.object_storage.download_image(data["object_key"])
             if not image:
-                return "Imagem não encontrada no S3"
+                return "Image not found on S3"
 
             image_embedding = self.factory.get_data_embedding("image")
             vector = image_embedding.process_embedding(image)
 
             self.db.insert_data(vector, data)
 
-            metadata = {"id": data.get("object_key"), "type": data.get("typé")}
-            res = self.db.search(vector, 4, metadata)
+            metadata = {"id": data["object_key"], "type": data["type"]}
+            neighbours = self.db.search(vector, 4, metadata)
 
-            self.cache.set(data.get("object_key"), res)
-            for key, distance, vect, type in res:
-                metadata = {"id": key, "type": type}
-                neighbours = self.db.search(vect, 4, metadata)
-                self.cache.set(key, neighbours)
+            self.cache.set(data["object_key"], neighbours)
 
-            self.producer.produce(data.get("object_key"))
+            self.producer.produce(data["object_key"])
 
             return "Item processed"
 
