@@ -9,3 +9,7 @@ class VectorDatabase(ABC):
     @abstractmethod
     def search(self, query, top_k, metadata):
         pass
+
+    @abstractmethod
+    def get(self, id):
+        pass

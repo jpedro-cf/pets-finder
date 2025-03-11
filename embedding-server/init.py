@@ -1,10 +1,12 @@
 import os
 import sys
+import threading
 import clip
 from os.path import join, dirname
 from dotenv import load_dotenv
 
 from cache.redis import RedisCache
+from rest.api import Api
 
 load_dotenv(override=True)
 sys.dont_write_bytecode = True
@@ -27,12 +29,16 @@ def start():
     ]
     embedding_factory = EmbeddingsFactory(embeddings)
 
-    database = MilvusDatabase()
+    database = MilvusDatabase("conn1")
     obj_storage = S3Client()
     cache = RedisCache()
 
     consumer = QueueConsumer(database, obj_storage, cache, embedding_factory)
-    consumer.listen()
+    consumer_thread = threading.Thread(target=consumer.listen, daemon=True)
+    consumer_thread.start()
+
+    api = Api(embedding_factory, database, cache, obj_storage)
+    api.run()
 
 
 if __name__ == "__main__":

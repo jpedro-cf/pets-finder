@@ -10,10 +10,11 @@ from pymilvus import (
 
 
 class MilvusDatabase(VectorDatabase):
-    def __init__(self, host="localhost", port="19530", collection_name="pets"):
+    def __init__(self, conn, host="localhost", port="19530", collection_name="pets"):
         self.host = host
         self.port = port
         self.collection_name = collection_name
+        self.conn = conn
 
         self._connect_to_milvus()
         self._define_schema()
@@ -22,7 +23,7 @@ class MilvusDatabase(VectorDatabase):
         self._load_collection()
 
     def _connect_to_milvus(self):
-        connections.connect(alias="default", host=self.host, port=self.port)
+        connections.connect(alias=self.conn, host=self.host, port=self.port)
         print(f"Connected to Milvus - {self.host}:{self.port}")
 
     def _define_schema(self):
@@ -37,11 +38,15 @@ class MilvusDatabase(VectorDatabase):
             FieldSchema(name="color", dtype=DataType.VARCHAR, max_length=100),
             FieldSchema(name="type", dtype=DataType.VARCHAR, max_length=100),
         ]
-        schema = CollectionSchema(fields, description="Pets collection")
+        schema = CollectionSchema(
+            fields, description="Pets collection", using=self.conn
+        )
         self.schema = schema
 
     def _create_collection(self):
-        self.collection = Collection(name=self.collection_name, schema=self.schema)
+        self.collection = Collection(
+            name=self.collection_name, schema=self.schema, using=self.conn
+        )
 
     def _create_index(self):
         index_params = {
@@ -49,10 +54,12 @@ class MilvusDatabase(VectorDatabase):
             "metric_type": "L2",
             "params": {"nlist": 128},
         }
-        self.collection.create_index(field_name="vector", index_params=index_params)
+        self.collection.create_index(
+            field_name="vector", index_params=index_params, using=self.conn
+        )
 
     def _load_collection(self):
-        self.collection.load()
+        self.collection.load(using=self.conn)
 
     def insert_data(self, vector, metadata):
         try:
@@ -65,6 +72,7 @@ class MilvusDatabase(VectorDatabase):
                         "type": metadata["type"],
                     },
                 ],
+                using=self.conn,
             )
             return res
         except Exception as e:
@@ -75,8 +83,8 @@ class MilvusDatabase(VectorDatabase):
         try:
             search_params = {"metric_type": "L2", "params": {"nprobe": 10}}
 
-            expression = f'id != "{metadata["id"]}"'
-            if "type" in metadata:
+            expression = f'id != "{metadata["id"]}"' if metadata else ""
+            if metadata and "type" in metadata:
                 expression += f' and type == "{metadata["type"]}"'
 
             res = self.collection.search(
@@ -86,7 +94,9 @@ class MilvusDatabase(VectorDatabase):
                 param=search_params,
                 limit=top_k,
                 output_fields=["id", "type"],
+                using=self.conn,
             )
+
             structured_response = []
             for hits in res:
                 for hit in hits:
@@ -101,6 +111,14 @@ class MilvusDatabase(VectorDatabase):
         except Exception as e:
             print(e)
 
+    def get(self, id):
+        res = self.collection.query(
+            expr=f'id == "{id}"',
+            output_fields=["id", "type", "vector"],
+            using=self.conn,
+        )
+        return res[0] if res else None
+
     def close(self):
-        connections.disconnect(alias="default")
+        connections.disconnect(alias=self.conn)
         print("Milvus connection closed.")
