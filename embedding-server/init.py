@@ -4,6 +4,8 @@ import clip
 from os.path import join, dirname
 from dotenv import load_dotenv
 
+from cache.redis import RedisCache
+
 load_dotenv(override=True)
 sys.dont_write_bytecode = True
 
@@ -27,8 +29,9 @@ def start():
 
     database = MilvusDatabase()
     obj_storage = S3Client()
+    cache = RedisCache()
 
-    consumer = QueueConsumer(database, obj_storage, embedding_factory)
+    consumer = QueueConsumer(database, obj_storage, cache, embedding_factory)
     consumer.listen()
 
 

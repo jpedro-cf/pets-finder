@@ -1,32 +1,24 @@
 import json
 import pika
 
-from database.database import VectorDatabase
-
 
 class QueueProducer:
-    def __init__(self, database: VectorDatabase):
-        self.db = database
+    def __init__(self, host="localhost"):
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host))
+        self.channel = self.connection.channel()
+        self.channel.queue_declare(queue="processed", durable=True)
 
-    def initialize(self):
-        connection = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
-        channel = connection.channel()
+    def produce(self, data):
+        message = json.dumps({"id": data})
 
-        channel.queue_declare(queue="to_process", durable=True)
-        message = {
-            "color": "brown",
-            "entity_id": "12345",
-            "type": "dog",
-        }
-        channel.basic_publish(
+        self.channel.basic_publish(
             exchange="",
-            routing_key="to_process",
-            body=json.dumps(message),
+            routing_key="processed",
+            body=message,
             properties=pika.BasicProperties(
                 content_type="application/json", delivery_mode=2
             ),
         )
 
-        print(" [x] Sent")
-
-        connection.close()
+    def close(self):
+        self.connection.close()
