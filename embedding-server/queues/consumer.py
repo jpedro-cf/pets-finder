@@ -73,10 +73,8 @@ class QueueConsumer:
             )
 
             print(f"Item {pet_id} processed!")
-
-        except json.JSONDecodeError:
-            print("Error decoding json")
         except Exception as e:
+            self.producer.produce_error({"requestId": request_id, "info": e})
             print(f"Error occurred {e}")
 
     def process_similarity(self, ch, method, properties, body):
@@ -96,18 +94,13 @@ class QueueConsumer:
             self.producer.produce_similarity_completed(
                 {"id": None, "requestId": request_id, "data": neighbours}
             )
-
-        except json.JSONDecodeError:
-            print("Error decoding json")
         except Exception as e:
+            self.producer.produce_error({"requestId": request_id, "info": e})
             print(f"Error occurred {e}")
 
     def _setup_channel(self):
         self.channel.exchange_declare(
             exchange=config["PET_EXCHANGE"], exchange_type="topic", durable=True
-        )
-        self.channel.exchange_declare(
-            exchange=config["SIMILARITY_EXCHANGE"], exchange_type="topic", durable=True
         )
 
         self.channel.queue_declare(queue=config["PET_CREATED_QUEUE"], durable=True)
@@ -121,7 +114,7 @@ class QueueConsumer:
             routing_key=config["PET_CREATED_ROUTING_KEY"],
         )
         self.channel.queue_bind(
-            exchange=config["SIMILARITY_EXCHANGE"],
+            exchange=config["PET_EXCHANGE"],
             queue=config["SIMILARITY_REQUESTED_QUEUE"],
             routing_key=config["SIMILARITY_REQUESTED_ROUTING_KEY"],
         )

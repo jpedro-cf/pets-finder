@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class FailedConsumer {
     private final Logger logger = LoggerFactory.getLogger(FailedConsumer.class);
 
-    @RabbitListener(queues = RabbitMQConfig.FAILED_QUEUE)
+    @RabbitListener(queues = RabbitMQConfig.DATA_FAILED_QUEUE)
     public void consume(ProcessFailedDTO message){
         logger.error(message.toString());
     }

@@ -26,8 +26,19 @@ class QueueProducer:
         message = json.dumps(data)
 
         self.channel.basic_publish(
-            exchange=config["SIMILARITY_EXCHANGE"],
+            exchange=config["PET_EXCHANGE"],
             routing_key=config["SIMILARITY_COMPLETED_ROUTING_KEY"],
+            body=message,
+            properties=pika.BasicProperties(
+                content_type="application/json", delivery_mode=2
+            ),
+        )
+
+    def produce_error(self, data):
+        message = json.dumps(data)
+
+        self.channel.basic_publish(
+            exchange=config["FAILED_EXCHANGE"],
             body=message,
             properties=pika.BasicProperties(
                 content_type="application/json", delivery_mode=2

@@ -8,17 +8,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
     public static final String PET_EXCHANGE_NAME = "pet.v1.events";
-    public static final String SIMILARITY_EXCHANGE_NAME = "similarity.v1.events";
     public static final String FAILED_EXCHANGE_NAME = "failed.v1.events";
 
     public static final String PET_CREATED_ROUTING_KEY = "pet.created";
     public static final String PET_PROCESSED_ROUTING_KEY = "pet.processed";
 
-    public static final String SIMILARITY_REQUESTED_ROUTING_KEY = "similarity.requested";
-    public static final String SIMILARITY_COMPLETED_ROUTING_KEY = "similarity.completed";
+    public static final String SIMILARITY_REQUESTED_ROUTING_KEY = "pet.similarity.requested";
+    public static final String SIMILARITY_COMPLETED_ROUTING_KEY = "pet.similarity.completed";
 
     public static final String DATA_PROCESSED_QUEUE = "data.processed.queue";
-    public static final String FAILED_QUEUE = "failed.queue";
+    public static final String DATA_FAILED_QUEUE = "data.failed.queue";
 
     @Bean
     public Jackson2JsonMessageConverter jackson2JsonMessageConverter(){
@@ -28,10 +27,6 @@ public class RabbitMQConfig {
     @Bean
     public TopicExchange petExchange() {
         return new TopicExchange(PET_EXCHANGE_NAME, true, false);
-    }
-    @Bean
-    public TopicExchange similarityExchange() {
-        return new TopicExchange(SIMILARITY_EXCHANGE_NAME, true,false);
     }
     @Bean
     public FanoutExchange failedExchange() {
@@ -45,7 +40,7 @@ public class RabbitMQConfig {
 
     @Bean
     public Queue failedQueue(){
-        return new Queue(FAILED_QUEUE);
+        return new Queue(DATA_FAILED_QUEUE);
     }
 
     @Bean
@@ -56,9 +51,9 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Binding bindingDataProcessed(){
+    public Binding bindingSimilarityCompleted(){
         Queue queue = dataProcessedQueue();
-        TopicExchange exchange = similarityExchange();
+        TopicExchange exchange = petExchange();
         return BindingBuilder.bind(queue).to(exchange).with(SIMILARITY_COMPLETED_ROUTING_KEY);
     }
 
