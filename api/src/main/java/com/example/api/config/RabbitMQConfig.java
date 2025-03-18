@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
     public static final String PET_EXCHANGE_NAME = "pet.v1.events";
     public static final String SIMILARITY_EXCHANGE_NAME = "similarity.v1.events";
+    public static final String FAILED_EXCHANGE_NAME = "failed.v1.events";
 
     public static final String PET_CREATED_ROUTING_KEY = "pet.created";
     public static final String PET_PROCESSED_ROUTING_KEY = "pet.processed";
@@ -17,6 +18,7 @@ public class RabbitMQConfig {
     public static final String SIMILARITY_COMPLETED_ROUTING_KEY = "similarity.completed";
 
     public static final String DATA_PROCESSED_QUEUE = "data.processed.queue";
+    public static final String FAILED_QUEUE = "failed.queue";
 
     @Bean
     public Jackson2JsonMessageConverter jackson2JsonMessageConverter(){
@@ -31,6 +33,10 @@ public class RabbitMQConfig {
     public TopicExchange similarityExchange() {
         return new TopicExchange(SIMILARITY_EXCHANGE_NAME, true,false);
     }
+    @Bean
+    public FanoutExchange failedExchange() {
+        return new FanoutExchange(FAILED_EXCHANGE_NAME, true,false);
+    }
 
     @Bean
     public Queue dataProcessedQueue(){
@@ -38,16 +44,28 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public Queue failedQueue(){
+        return new Queue(FAILED_QUEUE);
+    }
+
+    @Bean
     public Binding bindingPetProcessed(){
-        Queue queue = new Queue(DATA_PROCESSED_QUEUE);
+        Queue queue = dataProcessedQueue();
         TopicExchange exchange = petExchange();
         return BindingBuilder.bind(queue).to(exchange).with(PET_PROCESSED_ROUTING_KEY);
     }
 
     @Bean
-    public Binding bindingSearchCompleted(){
-        Queue queue = new Queue(DATA_PROCESSED_QUEUE);
+    public Binding bindingDataProcessed(){
+        Queue queue = dataProcessedQueue();
         TopicExchange exchange = similarityExchange();
         return BindingBuilder.bind(queue).to(exchange).with(SIMILARITY_COMPLETED_ROUTING_KEY);
+    }
+
+    @Bean
+    public Binding bindingFailed(){
+        Queue queue = failedQueue();
+        FanoutExchange exchange = failedExchange();
+        return BindingBuilder.bind(queue).to(exchange);
     }
 }
