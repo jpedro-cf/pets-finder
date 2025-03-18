@@ -63,51 +63,42 @@ class MilvusDatabase(VectorDatabase):
         self.collection.load(using=self.conn)
 
     def insert_data(self, vector, metadata):
-        try:
-            res = self.collection.upsert(
-                [
-                    {
-                        "id": metadata["id"],
-                        "key": metadata["imageKey"],
-                        "vector": vector,
-                        "color": metadata["color"],
-                        "type": metadata["type"],
-                    },
-                ],
-                using=self.conn,
-            )
-            return res
-        except Exception as e:
-            print(e)
-            return None
+        res = self.collection.upsert(
+            [
+                {
+                    "id": metadata["id"],
+                    "key": metadata["imageKey"],
+                    "vector": vector,
+                    "color": metadata["color"],
+                    "type": metadata["type"],
+                },
+            ],
+            using=self.conn,
+        )
+        return res
 
     def search(self, query, top_k, metadata):
-        try:
-            search_params = {"metric_type": "L2", "params": {"nprobe": 10}}
+        search_params = {"metric_type": "L2", "params": {"nprobe": 10}}
 
-            expression = f'id != "{metadata["id"]}"' if metadata else ""
-            if metadata and "type" in metadata:
-                expression += f' and type == "{metadata["type"]}"'
+        expression = f'id != "{metadata["id"]}"' if metadata else ""
+        if metadata and "type" in metadata:
+            expression += f' and type == "{metadata["type"]}"'
 
-            res = self.collection.search(
-                data=[query],
-                expr=expression,
-                anns_field="vector",
-                param=search_params,
-                limit=top_k,
-                output_fields=["id", "key"],
-                using=self.conn,
-            )
+        res = self.collection.search(
+            data=[query],
+            expr=expression,
+            anns_field="vector",
+            param=search_params,
+            limit=top_k,
+            output_fields=["id", "key"],
+            using=self.conn,
+        )
 
-            structured_response = []
-            for hits in res:
-                for hit in hits:
-                    structured_response.append(
-                        {"id": hit.id, "imageKey": hit.entity.key}
-                    )
-            return structured_response
-        except Exception as e:
-            print(e)
+        structured_response = []
+        for hits in res:
+            for hit in hits:
+                structured_response.append({"id": hit.id, "imageKey": hit.entity.key})
+        return structured_response
 
     def get(self, id):
         res = self.collection.query(

@@ -13,7 +13,7 @@ class EmbeddingGenerator(DataEmbedding):
 
     def process_embedding(self, type, data):
         if type not in self.options:
-            return
+            raise Exception("Unsupported data.")
 
         generator: DataEmbedding = self.options[type]
 

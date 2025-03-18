@@ -13,15 +13,10 @@ class S3Client:
         )
 
     def download_image(self, key) -> BytesIO:
-        try:
+        bucket_name = os.environ["AWS_S3_BUCKET"]
 
-            bucket_name = os.environ["AWS_S3_BUCKET"]
+        file_stream = BytesIO()
+        self.client.download_fileobj(bucket_name, key, file_stream)
+        file_stream.seek(0)
 
-            file_stream = BytesIO()
-            self.client.download_fileobj(bucket_name, key, file_stream)
-            file_stream.seek(0)
-
-            return file_stream
-        except Exception as e:
-            print(e)
-            return None
+        return file_stream

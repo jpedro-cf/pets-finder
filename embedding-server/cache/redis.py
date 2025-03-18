@@ -11,8 +11,4 @@ class RedisCache:
         return json.loads(value) if value else None
 
     def set(self, key, data):
-        try:
-            key = f"{key}"
-            return self.client.set(key, json.dumps(data))
-        except Exception as e:
-            print(e)
+        return self.client.set(f"{key}", json.dumps(data))

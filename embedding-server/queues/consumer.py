@@ -57,7 +57,7 @@ class QueueConsumer:
 
             image_bytes = self.object_storage.download_image(image_key)
             if not image_bytes:
-                return "Image not found on S3"
+                raise Exception("Image not found on S3")
 
             vector = self.generator.process_embedding("image", image_bytes)
 
@@ -76,6 +76,8 @@ class QueueConsumer:
 
         except json.JSONDecodeError:
             print("Error decoding json")
+        except Exception as e:
+            print(f"Error occurred {e}")
 
     def process_similarity(self, ch, method, properties, body):
         try:
@@ -97,6 +99,8 @@ class QueueConsumer:
 
         except json.JSONDecodeError:
             print("Error decoding json")
+        except Exception as e:
+            print(f"Error occurred {e}")
 
     def _setup_channel(self):
         self.channel.exchange_declare(
