@@ -1,7 +1,9 @@
 package com.example.api.users.entities;
 
-import com.example.api.pets.PetEntity;
+import com.example.api.pets.entities.PetEntity;
 import com.example.api.users.enums.UserRolesEnum;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,14 +31,17 @@ public class UserEntity implements UserDetails {
     @Column(unique = true)
     private String email;
     private String name;
+    @JsonIgnore
     private String password;
 
     @Column(unique = true)
     private String number;
 
+    @Enumerated(EnumType.STRING)
     private UserRolesEnum role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<PetEntity> pets;
 
     @Override

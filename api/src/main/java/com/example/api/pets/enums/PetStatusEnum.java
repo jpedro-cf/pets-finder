@@ -1,12 +1,13 @@
-package com.example.api.users.enums;
+package com.example.api.pets.enums;
 
-public enum UserRolesEnum {
-    ADMIN("ADMIN"),
-    USER("USER");
+public enum PetStatusEnum {
+    PROCESSED("PROCESSED"),
+    PROCESSING("PROCESSING"),
+    UNAVAILABLE("UNAVAILABLE");
 
     private String value;
 
-    UserRolesEnum(final String value) {
+    PetStatusEnum(final String value) {
         this.value = value;
     }
 

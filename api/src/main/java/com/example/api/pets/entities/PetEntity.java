@@ -1,5 +1,7 @@
-package com.example.api.pets;
+package com.example.api.pets.entities;
 
+import com.example.api.pets.enums.PetStatusEnum;
+import com.example.api.pets.enums.PetTypeEnum;
 import com.example.api.users.entities.UserEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
