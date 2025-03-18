@@ -8,7 +8,7 @@ class ImageEmbedding(DataEmbedding):
     def __init__(self, clip, model, preprocess):
         self.clip, self.model, self.preprocess = clip, model, preprocess
 
-    def process_embedding(self, data):
+    def process_embedding(self, type, data):
         image = Image.open(data)
         image_input = self.preprocess(image).unsqueeze(0).to("cpu")
 

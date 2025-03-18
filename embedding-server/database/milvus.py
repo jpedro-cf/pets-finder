@@ -34,9 +34,10 @@ class MilvusDatabase(VectorDatabase):
                 max_length=255,
                 is_primary=True,
             ),
+            FieldSchema(name="key", dtype=DataType.VARCHAR, max_length=100),
             FieldSchema(name="vector", dtype=DataType.FLOAT_VECTOR, dim=512),
-            FieldSchema(name="color", dtype=DataType.VARCHAR, max_length=100),
-            FieldSchema(name="type", dtype=DataType.VARCHAR, max_length=100),
+            FieldSchema(name="color", dtype=DataType.VARCHAR, max_length=20),
+            FieldSchema(name="type", dtype=DataType.VARCHAR, max_length=5),
         ]
         schema = CollectionSchema(
             fields, description="Pets collection", using=self.conn
@@ -66,7 +67,8 @@ class MilvusDatabase(VectorDatabase):
             res = self.collection.upsert(
                 [
                     {
-                        "id": metadata["object_key"],
+                        "id": metadata["id"],
+                        "key": metadata["imageKey"],
                         "vector": vector,
                         "color": metadata["color"],
                         "type": metadata["type"],
@@ -93,7 +95,7 @@ class MilvusDatabase(VectorDatabase):
                 anns_field="vector",
                 param=search_params,
                 limit=top_k,
-                output_fields=["id", "type"],
+                output_fields=["id", "key"],
                 using=self.conn,
             )
 
@@ -101,11 +103,7 @@ class MilvusDatabase(VectorDatabase):
             for hits in res:
                 for hit in hits:
                     structured_response.append(
-                        {
-                            "id": hit.id,
-                            "type": hit.entity.type,
-                            "score": hit.entity.distance,
-                        }
+                        {"id": hit.id, "imageKey": hit.entity.key}
                     )
             return structured_response
         except Exception as e:

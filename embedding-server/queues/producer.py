@@ -1,19 +1,33 @@
 import json
 import pika
+from queues.config import rabbit_mq_config as config
 
 
 class QueueProducer:
-    def __init__(self, host="localhost"):
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host))
+    def __init__(self):
+        self.connection = pika.BlockingConnection(
+            pika.ConnectionParameters("localhost")
+        )
         self.channel = self.connection.channel()
-        self.channel.queue_declare(queue="processed", durable=True)
 
-    def produce(self, data):
-        message = json.dumps({"id": data})
+    def produce_pet_processed(self, data):
+        message = json.dumps(data)
 
         self.channel.basic_publish(
-            exchange="",
-            routing_key="processed",
+            exchange=config["PET_EXCHANGE"],
+            routing_key=config["PET_PROCESSED_ROUTING_KEY"],
+            body=message,
+            properties=pika.BasicProperties(
+                content_type="application/json", delivery_mode=2
+            ),
+        )
+
+    def produce_similarity_completed(self, data):
+        message = json.dumps(data)
+
+        self.channel.basic_publish(
+            exchange=config["SIMILARITY_EXCHANGE"],
+            routing_key=config["SIMILARITY_COMPLETED_ROUTING_KEY"],
             body=message,
             properties=pika.BasicProperties(
                 content_type="application/json", delivery_mode=2
