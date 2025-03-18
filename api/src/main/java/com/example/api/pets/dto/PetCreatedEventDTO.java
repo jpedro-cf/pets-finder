@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 public record PetCreatedEventDTO(String id,
                                  String requestId,
                                  String imageKey,
+                                 String type,
+                                 String color,
                                  BigDecimal latitude,
                                  BigDecimal longitude
                                    ) {
