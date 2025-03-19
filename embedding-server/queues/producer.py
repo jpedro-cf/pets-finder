@@ -34,11 +34,24 @@ class QueueProducer:
             ),
         )
 
-    def produce_error(self, data):
+    def produce_pet_error(self, data):
         message = json.dumps(data)
 
         self.channel.basic_publish(
-            exchange=config["FAILED_EXCHANGE"],
+            exchange=config["PET_EXCHANGE"],
+            routing_key=config["PET_FAILED_ROUTING_KEY"],
+            body=message,
+            properties=pika.BasicProperties(
+                content_type="application/json", delivery_mode=2
+            ),
+        )
+
+    def produce_similarity_error(self, data):
+        message = json.dumps(data)
+
+        self.channel.basic_publish(
+            exchange=config["PET_EXCHANGE"],
+            routing_key=config["SIMILARITY_FAILED_ROUTING_KEY"],
             body=message,
             properties=pika.BasicProperties(
                 content_type="application/json", delivery_mode=2

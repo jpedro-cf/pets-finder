@@ -34,7 +34,6 @@ class MilvusDatabase(VectorDatabase):
                 max_length=255,
                 is_primary=True,
             ),
-            FieldSchema(name="key", dtype=DataType.VARCHAR, max_length=100),
             FieldSchema(name="vector", dtype=DataType.FLOAT_VECTOR, dim=512),
             FieldSchema(name="color", dtype=DataType.VARCHAR, max_length=20),
             FieldSchema(name="type", dtype=DataType.VARCHAR, max_length=5),
@@ -67,7 +66,6 @@ class MilvusDatabase(VectorDatabase):
             [
                 {
                     "id": metadata["id"],
-                    "key": metadata["imageKey"],
                     "vector": vector,
                     "color": metadata["color"],
                     "type": metadata["type"],
@@ -90,14 +88,14 @@ class MilvusDatabase(VectorDatabase):
             anns_field="vector",
             param=search_params,
             limit=top_k,
-            output_fields=["id", "key"],
+            output_fields=["id"],
             using=self.conn,
         )
 
         structured_response = []
         for hits in res:
             for hit in hits:
-                structured_response.append({"id": hit.id, "imageKey": hit.entity.key})
+                structured_response.append(hit.id)
         return structured_response
 
     def get(self, id):

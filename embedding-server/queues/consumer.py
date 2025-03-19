@@ -2,7 +2,6 @@ import json
 import pika
 
 from aws.s3 import S3Client
-from cache.redis import RedisCache
 from database.database import VectorDatabase
 from embeddings.embeddings import DataEmbedding
 from queues.producer import QueueProducer
@@ -15,13 +14,11 @@ class QueueConsumer:
         self,
         database: VectorDatabase,
         storage: S3Client,
-        cache: RedisCache,
         embedding_generator: DataEmbedding,
     ):
         self.db = database
         self.object_storage = storage
         self.generator = embedding_generator
-        self.cache = cache
         self.producer = QueueProducer()
 
     def listen(self):
@@ -66,15 +63,13 @@ class QueueConsumer:
             metadata = {"id": pet_id, "type": pet_type, "color": color}
             neighbours = self.db.search(vector, 4, metadata)
 
-            self.cache.set(pet_id, neighbours)
-
             self.producer.produce_pet_processed(
                 {"id": pet_id, "requestId": request_id, "data": neighbours}
             )
 
             print(f"Item {pet_id} processed!")
         except Exception as e:
-            self.producer.produce_error({"requestId": request_id, "info": e})
+            self.producer.produce_pet_error({"requestId": request_id, "info": e})
             print(f"Error occurred {e}")
 
     def process_similarity(self, ch, method, properties, body):
@@ -94,8 +89,9 @@ class QueueConsumer:
             self.producer.produce_similarity_completed(
                 {"id": None, "requestId": request_id, "data": neighbours}
             )
+            print(f"Similarity request : {request_id} completed!")
         except Exception as e:
-            self.producer.produce_error({"requestId": request_id, "info": e})
+            self.producer.produce_similarity_error({"requestId": request_id, "info": e})
             print(f"Error occurred {e}")
 
     def _setup_channel(self):

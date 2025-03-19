@@ -5,7 +5,6 @@ import clip
 from os.path import join, dirname
 from dotenv import load_dotenv
 
-from cache.redis import RedisCache
 from embeddings.embedding_generator import EmbeddingGenerator
 
 load_dotenv(override=True)
@@ -23,9 +22,8 @@ def start():
 
     database = MilvusDatabase("conn1")
     obj_storage = S3Client()
-    cache = RedisCache()
 
-    consumer = QueueConsumer(database, obj_storage, cache, embedding_generator)
+    consumer = QueueConsumer(database, obj_storage, embedding_generator)
     consumer.listen()
 
 
