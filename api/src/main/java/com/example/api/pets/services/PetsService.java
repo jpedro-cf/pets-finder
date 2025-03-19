@@ -24,7 +24,7 @@ public class PetsService {
     private PetsProducer producer;
 
 
-    public PetEntity getPet(UUID id) throws Exception{
+    public PetEntity getPetById(UUID id) throws Exception{
         return this.repository.findById(id).orElseThrow(() -> new BadRequestException("Pet not found"));
     }
 

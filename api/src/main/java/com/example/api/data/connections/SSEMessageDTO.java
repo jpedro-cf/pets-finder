@@ -1,4 +1,4 @@
 package com.example.api.data.connections;
 
-public record SSEMessageDTO(String connectionId, String step) {
+public record SSEMessageDTO(String connectionId, String step, Object data) {
 }
