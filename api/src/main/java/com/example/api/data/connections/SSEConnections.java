@@ -1,13 +1,13 @@
-package com.example.api.pets.connections;
+package com.example.api.data.connections;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Service
+@Component
 public class SSEConnections {
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
 

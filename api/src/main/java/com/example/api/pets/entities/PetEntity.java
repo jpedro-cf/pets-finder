@@ -32,6 +32,7 @@ public class PetEntity {
     private PetTypeEnum type;
 
     private String color;
+    private String location;
 
     private BigDecimal latitude;
     private BigDecimal longitude;

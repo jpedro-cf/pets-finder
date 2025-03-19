@@ -7,6 +7,7 @@ CREATE TABLE pets (
     status VARCHAR(16) NOT NULL,
     type VARCHAR(5) NOT NULL,
     color VARCHAR(20),
+    location VARCHAR(100),
     latitude DECIMAL(9, 6),
     longitude DECIMAL(9, 6)
     date TIMESTAMP NOT NULL,

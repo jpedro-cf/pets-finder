@@ -2,8 +2,8 @@ package com.example.api.pets.messaging;
 
 import com.example.api.config.RabbitMQConfig;
 import com.example.api.data.cache.CacheService;
-import com.example.api.pets.connections.SSEConnections;
-import com.example.api.pets.connections.SSEMessageDTO;
+import com.example.api.data.connections.SSEConnections;
+import com.example.api.data.connections.SSEMessageDTO;
 import com.example.api.pets.messaging.dto.DataProcessedDTO;
 import com.example.api.pets.dto.SimilarPetsDTO;
 import org.slf4j.Logger;
@@ -19,7 +19,7 @@ public class DataProcessedConsumer {
     @Autowired
     private CacheService<List<SimilarPetsDTO>> cache;
     @Autowired
-    private SSEConnections connections;
+    private SSEConnections sseConnections;
 
     private final Logger logger = LoggerFactory.getLogger(DataProcessedConsumer.class);
 
@@ -28,7 +28,7 @@ public class DataProcessedConsumer {
         if(message.id().isPresent()){
 
         }
-        connections.sendMessage(
+        sseConnections.sendMessage(
                 new SSEMessageDTO(message.requestId(), "completed")
         );
 
