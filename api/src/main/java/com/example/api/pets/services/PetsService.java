@@ -15,6 +15,8 @@ import java.util.UUID;
 public class PetsService {
     @Autowired
     private PetsRepository repository;
+    @Autowired
+
 
     public PetEntity getPet(UUID id) throws Exception{
         return this.repository.findById(id).orElseThrow(() -> new BadRequestException("Pet not found"));

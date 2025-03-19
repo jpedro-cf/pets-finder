@@ -26,8 +26,7 @@ public class PetEntity {
 
     private String description;
 
-    @Column(name="image_url")
-    private String imageUrl;
+    private String image;
 
     private PetStatusEnum status;
     private PetTypeEnum type;

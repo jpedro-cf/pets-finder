@@ -3,7 +3,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE TABLE pets (
     id UUID DEFAULT get_random_uuid() PRIMARY KEY,
     description TEXT,
-    image_url VARCHAR(100) NOT NULL,
+    image VARCHAR(100) NOT NULL,
     status VARCHAR(16) NOT NULL,
     type VARCHAR(5) NOT NULL,
     color VARCHAR(20),

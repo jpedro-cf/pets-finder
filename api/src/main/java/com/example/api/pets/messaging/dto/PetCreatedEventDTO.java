@@ -1,6 +1,4 @@
-package com.example.api.pets.dto;
-
-import java.math.BigDecimal;
+package com.example.api.pets.messaging.dto;
 
 public record PetCreatedEventDTO(String id,
                                  String requestId,
