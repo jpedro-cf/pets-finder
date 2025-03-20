@@ -1,4 +1,6 @@
 package com.example.api.pets.messaging.dto;
 
-public record ProcessFailedDTO(String requestId, String info) {
+import java.util.Optional;
+
+public record ProcessFailedDTO(String requestId, Optional<String> id, String info) {
 }

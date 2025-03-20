@@ -1,5 +1,6 @@
 package com.example.api.data.cache;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -17,8 +19,16 @@ public class CacheService<T> {
 
     private final Logger logger = LoggerFactory.getLogger(CacheService.class);
 
-    public String getValue(String key){
-        return template.opsForValue().get(key);
+    public List<T> getValue(String key){
+        String jsonValue = template.opsForValue().get(key);
+        if (jsonValue != null) {
+            try {
+                return mapper.readValue(jsonValue, new TypeReference<List<T>>() {});
+            } catch (Exception e) {
+                logger.error("Error reading cache: " + e.getMessage());
+            }
+        }
+        return null;
     }
 
     public void setValue(String key, T value){
@@ -30,12 +40,11 @@ public class CacheService<T> {
         }
     }
 
-    public void setValue(String key, T value, long timeoutInSeconds){
+    public void deleteKey(String key){
         try {
-            String jsonInString = mapper.writeValueAsString(value);
-            template.opsForValue().set(key,jsonInString,timeoutInSeconds, TimeUnit.SECONDS);
+            template.delete(key);
         } catch (Exception e) {
-            logger.error("Error writing cache :" + e.getMessage());
+            logger.error("Error removing cache :" + e.getMessage());
         }
     }
 

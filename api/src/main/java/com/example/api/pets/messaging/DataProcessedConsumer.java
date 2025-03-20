@@ -5,6 +5,7 @@ import com.example.api.data.cache.CacheService;
 import com.example.api.data.connections.SSEConnections;
 import com.example.api.data.connections.SSEMessageDTO;
 import com.example.api.pets.entities.PetEntity;
+import com.example.api.pets.enums.PetStatusEnum;
 import com.example.api.pets.messaging.dto.DataProcessedDTO;
 import com.example.api.pets.dto.SimilarPetsDTO;
 import com.example.api.pets.services.PetsService;
@@ -35,7 +36,7 @@ public class DataProcessedConsumer {
 
         for (String id: message.data()){
             try {
-                PetEntity pet = petsService.getPetById(UUID.fromString(id));
+                PetEntity pet = petsService.getPetById(id);
                 similarPets.add(
                         new SimilarPetsDTO(pet.getId().toString(),
                                             pet.getImage(),
@@ -48,8 +49,16 @@ public class DataProcessedConsumer {
         }
 
         if(message.id().isPresent()){
-            cacheService.setValue(message.id().get(), similarPets);
+            try {
+                String petId = message.id().get();
+                cacheService.setValue(petId, similarPets);
+                petsService.updateStatus(petId, PetStatusEnum.PROCESSED);
+
+            } catch (Exception e) {
+                logger.error("Error after pet being processed: " + e.getMessage());
+            }
         }
+
         if(message.requestId().isPresent()){
             sseConnections.sendMessage(
                     new SSEMessageDTO(message.requestId().get(), "completed", similarPets)

@@ -4,6 +4,7 @@ import com.example.api.data.cache.CacheService;
 import com.example.api.data.connections.SSEConnections;
 import com.example.api.data.connections.SSEMessageDTO;
 import com.example.api.pets.dto.CreatePetDTO;
+import com.example.api.pets.dto.PetResponseDTO;
 import com.example.api.pets.dto.SearchPetsDTO;
 import com.example.api.pets.entities.PetEntity;
 import com.example.api.pets.services.PetsService;
@@ -60,6 +61,17 @@ public class PetsController {
             String res = service.search(data);
             return ResponseEntity.ok(res);
         } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error occurred");
+        }
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity getPet(@PathVariable UUID id){
+        try{
+            PetResponseDTO data = service.getPetData(id.toString());
+            return ResponseEntity.ok(data);
+        } catch (Exception e) {
+            System.out.println(e);
             return ResponseEntity.badRequest().body("Error occurred");
         }
     }
