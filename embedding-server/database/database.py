@@ -11,5 +11,5 @@ class VectorDatabase(ABC):
         pass
 
     @abstractmethod
-    def get(self, id):
+    def delete(self, id):
         pass

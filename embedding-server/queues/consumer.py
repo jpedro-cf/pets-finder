@@ -70,8 +70,13 @@ class QueueConsumer:
             print(f"Item {pet_id} processed!")
         except Exception as e:
             self.producer.produce_pet_error(
-                {"requestId": request_id, "info": "Error occurred while creating pet"}
+                {
+                    "requestId": request_id,
+                    "id": pet_id,
+                    "info": "Error occurred while creating pet",
+                }
             )
+            self.db.delete(pet_id)
             print(f"Error occurred: {e}")
 
     def process_similarity(self, ch, method, properties, body):

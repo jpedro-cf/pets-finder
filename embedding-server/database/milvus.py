@@ -93,15 +93,15 @@ class MilvusDatabase(VectorDatabase):
         )
 
         structured_response = []
+
         for hits in res:
             for hit in hits:
                 structured_response.append(hit.id)
         return structured_response
 
-    def get(self, id):
-        res = self.collection.query(
+    def delete(self, id):
+        res = self.collection.delete(
             expr=f'id == "{id}"',
-            output_fields=["id", "type", "vector"],
             using=self.conn,
         )
         return res[0] if res else None
