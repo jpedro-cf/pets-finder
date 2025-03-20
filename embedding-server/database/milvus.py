@@ -97,6 +97,7 @@ class MilvusDatabase(VectorDatabase):
         for hits in res:
             for hit in hits:
                 structured_response.append(hit.id)
+
         return structured_response
 
     def delete(self, id):
