@@ -34,9 +34,6 @@ public class PetEntity {
     private String color;
     private String location;
 
-    private BigDecimal latitude;
-    private BigDecimal longitude;
-
     private Date date;
 
     @ManyToOne(fetch = FetchType.LAZY)

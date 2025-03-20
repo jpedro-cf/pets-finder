@@ -9,11 +9,9 @@ import java.util.Optional;
 
 public record CreatePetDTO(String description,
                            String color,
-                           UserEntity user,
                            MultipartFile image,
                            PetTypeEnum type,
-                           BigDecimal latitude,
-                           BigDecimal longitude,
-                           Optional<String> connectionId
+                           String location,
+                           Optional<String> requestId
                            ) {
 }

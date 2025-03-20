@@ -50,9 +50,11 @@ public class DataProcessedConsumer {
         if(message.id().isPresent()){
             cacheService.setValue(message.id().get(), similarPets);
         }
-        sseConnections.sendMessage(
-                new SSEMessageDTO(message.requestId(), "completed", similarPets)
-        );
+        if(message.requestId().isPresent()){
+            sseConnections.sendMessage(
+                    new SSEMessageDTO(message.requestId().get(), "completed", similarPets)
+            );
+        }
 
         logger.info("Data processed: " + message.toString());
     }

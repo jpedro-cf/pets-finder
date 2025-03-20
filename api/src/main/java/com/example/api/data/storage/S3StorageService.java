@@ -36,6 +36,6 @@ public class S3StorageService implements StorageService {
                 .key(fileName)
                 .build();
 
-        return client.utilities().getUrl(getRequest).toString();
+        return fileName;
     }
 }

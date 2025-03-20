@@ -11,31 +11,33 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class SSEConnections {
-    private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
+    private static final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(SSEConnections.class);
 
     public SseEmitter addEmitter(String uuid) {
-        SseEmitter emitter = new SseEmitter(0L);
+        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
         emitters.put(uuid, emitter);
 
         emitter.onCompletion(() -> emitters.remove(uuid));
-        emitter.onTimeout(() -> emitters.remove(uuid));
+        emitter.onTimeout(() ->  emitters.remove(uuid));
+        emitter.onError((e) ->  emitters.remove(uuid));
 
         return emitter;
     }
 
     public void sendMessage(SSEMessageDTO data) {
-        SseEmitter emitter = emitters.get(data.connectionId());
+        SseEmitter emitter = emitters.get(data.requestId());
+
         if (emitter != null) {
             try {
                 emitter.send(data);
 
                 if(data.step().equals("completed") || data.step().equals("failed")){
-                    emitters.remove(data.connectionId());
+                    emitter.complete();
                 }
 
             } catch (IOException e) {
-                emitters.remove(data.connectionId());
+                emitter.complete();
             }
         }
     }

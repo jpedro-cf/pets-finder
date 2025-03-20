@@ -8,8 +8,6 @@ CREATE TABLE pets (
     type VARCHAR(5) NOT NULL,
     color VARCHAR(20),
     location VARCHAR(100),
-    latitude DECIMAL(9, 6),
-    longitude DECIMAL(9, 6)
     date TIMESTAMP NOT NULL,
     CONSTRAINT status_check CHECK (status in ('PROCESSED', 'PROCESSING', 'UNAVAILABLE')),
     CONSTRAINT type_check CHECK (type in ('CAT', 'DOG', 'OTHER'))

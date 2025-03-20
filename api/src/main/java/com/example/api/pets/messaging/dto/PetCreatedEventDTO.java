@@ -2,7 +2,7 @@ package com.example.api.pets.messaging.dto;
 
 public record PetCreatedEventDTO(String id,
                                  String requestId,
-                                 String imageKey,
+                                 String image,
                                  String type,
                                  String color
                                    ) {
