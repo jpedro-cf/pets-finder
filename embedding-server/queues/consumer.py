@@ -48,7 +48,7 @@ class QueueConsumer:
 
             pet_id = data.get("id")
             request_id = data.get("requestId", None)
-            image_key = data.get("imageKey")
+            image_key = data.get("image")
             color = data.get("color")
             pet_type = data.get("type")
 
@@ -69,8 +69,10 @@ class QueueConsumer:
 
             print(f"Item {pet_id} processed!")
         except Exception as e:
-            self.producer.produce_pet_error({"requestId": request_id, "info": e})
-            print(f"Error occurred {e}")
+            self.producer.produce_pet_error(
+                {"requestId": request_id, "info": "Error occurred while creating pet"}
+            )
+            print(f"Error occurred: {e}")
 
     def process_similarity(self, ch, method, properties, body):
         try:
@@ -91,8 +93,13 @@ class QueueConsumer:
             )
             print(f"Similarity request : {request_id} completed!")
         except Exception as e:
-            self.producer.produce_similarity_error({"requestId": request_id, "info": e})
-            print(f"Error occurred {e}")
+            self.producer.produce_similarity_error(
+                {
+                    "requestId": request_id,
+                    "info": "Error occurred searching for similar pets",
+                }
+            )
+            print(f"Error occurred: {e}")
 
     def _setup_channel(self):
         self.channel.exchange_declare(
