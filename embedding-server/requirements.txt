@@ -10,4 +10,7 @@ pika
 python-dotenv
 pymilvus
 redis
+fastapi
+uvicorn
+python-multipart
 git+https://github.com/openai/CLIP.git

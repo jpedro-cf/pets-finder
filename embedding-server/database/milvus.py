@@ -78,10 +78,9 @@ class MilvusDatabase(VectorDatabase):
     def search(self, query, top_k, metadata):
         search_params = {"metric_type": "L2", "params": {"nprobe": 10}}
 
-        expression = f'id != "{metadata["id"]}"' if metadata else ""
+        expression = f'id != "{metadata["id"]}"' if metadata else "id != ''"
         if metadata and "type" in metadata:
             expression += f' and type == "{metadata["type"]}"'
-
         res = self.collection.search(
             data=[query],
             expr=expression,
@@ -99,6 +98,20 @@ class MilvusDatabase(VectorDatabase):
                 structured_response.append(hit.id)
 
         return structured_response
+
+    def get_by_id(self, id):
+        res = self.collection.query(
+            expr=f'id == "{id}"',
+            output_fields=["id", "type", "vector"],
+            using=self.conn,
+        )
+        if res:
+            return {
+                "id": res[0]["id"],
+                "type": res[0]["type"],
+                "vector": res[0]["vector"],
+            }
+        return None
 
     def delete(self, id):
         res = self.collection.delete(

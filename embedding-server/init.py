@@ -6,6 +6,7 @@ from os.path import join, dirname
 from dotenv import load_dotenv
 
 from embeddings.embedding_generator import EmbeddingGenerator
+from rest.api import Api
 
 load_dotenv(override=True)
 sys.dont_write_bytecode = True
@@ -24,7 +25,11 @@ def start():
     obj_storage = S3Client()
 
     consumer = QueueConsumer(database, obj_storage, embedding_generator)
-    consumer.listen()
+    consumer_thread = threading.Thread(target=consumer.listen, daemon=True)
+    consumer_thread.start()
+
+    api = Api(embedding_generator, database)
+    api.run()
 
 
 if __name__ == "__main__":

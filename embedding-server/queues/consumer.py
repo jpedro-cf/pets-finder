@@ -35,8 +35,8 @@ class QueueConsumer:
             auto_ack=True,
         )
         self.channel.basic_consume(
-            queue=config["SIMILARITY_REQUESTED_QUEUE"],
-            on_message_callback=self.process_similarity,
+            queue=config["PET_REFRESH_QUEUE"],
+            on_message_callback=self.process_refresh,
             auto_ack=True,
         )
         print("Consumer ready..")
@@ -64,7 +64,12 @@ class QueueConsumer:
             neighbours = self.db.search(vector, 4, metadata)
 
             self.producer.produce_pet_processed(
-                {"id": pet_id, "requestId": request_id, "data": neighbours}
+                {
+                    "id": pet_id,
+                    "requestId": request_id,
+                    "data": neighbours,
+                    "description": "data_of_description",
+                }
             )
 
             print(f"Item {pet_id} processed!")
@@ -79,29 +84,29 @@ class QueueConsumer:
             self.db.delete(pet_id)
             print(f"Error occurred: {e}")
 
-    def process_similarity(self, ch, method, properties, body):
+    def process_refresh(self, ch, method, properties, body):
         try:
             data = json.loads(body.decode("utf-8"))
 
-            request_id = data.get("requestId")
-            data_type = data.get("type")
-            content = data.get("data")
+            pet_id = data.get("id")
+            db_data = self.db.get_by_id(pet_id)
+            if not db_data:
+                raise Exception("Pet with this id not found.")
 
-            if data_type == "image":
-                content = self.object_storage.download_image(content)
+            vector = db_data["vector"]
+            pet_type = db_data["type"]
 
-            vector = self.generator.process_embedding(data_type, content)
-            neighbours = self.db.search(vector, 6, {})
+            metadata = {"id": pet_id, "type": pet_type}
+            neighbours = self.db.search(vector, 4, metadata)
 
-            self.producer.produce_similarity_completed(
-                {"id": None, "requestId": request_id, "data": neighbours}
-            )
-            print(f"Similarity request : {request_id} completed!")
+            self.producer.produce_pet_processed({"id": pet_id, "data": neighbours})
+
+            print(f"Item {pet_id} processed!")
         except Exception as e:
-            self.producer.produce_similarity_error(
+            self.producer.produce_pet_error(
                 {
-                    "requestId": request_id,
-                    "info": "Error occurred searching for similar pets",
+                    "id": pet_id,
+                    "info": "Error occurred while refreshing pet",
                 }
             )
             print(f"Error occurred: {e}")
@@ -112,9 +117,7 @@ class QueueConsumer:
         )
 
         self.channel.queue_declare(queue=config["PET_CREATED_QUEUE"], durable=True)
-        self.channel.queue_declare(
-            queue=config["SIMILARITY_REQUESTED_QUEUE"], durable=True
-        )
+        self.channel.queue_declare(queue=config["PET_REFRESH_QUEUE"], durable=True)
 
         self.channel.queue_bind(
             exchange=config["PET_EXCHANGE"],
@@ -123,6 +126,6 @@ class QueueConsumer:
         )
         self.channel.queue_bind(
             exchange=config["PET_EXCHANGE"],
-            queue=config["SIMILARITY_REQUESTED_QUEUE"],
-            routing_key=config["SIMILARITY_REQUESTED_ROUTING_KEY"],
+            queue=config["PET_REFRESH_QUEUE"],
+            routing_key=config["PET_REFRESH_ROUTING_KEY"],
         )
