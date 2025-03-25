@@ -34,7 +34,7 @@ class Api:
             vector = self.generator.process_embedding(data_type, data)
 
             res = self.db.search(vector, 6, {})
-            return res
+            return {"ids": res}
 
     def run(self):
-        uvicorn.run(self.app, host="localhost", port=3333)
+        uvicorn.run(self.app, host="0.0.0.0", port=3333)

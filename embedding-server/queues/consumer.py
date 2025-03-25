@@ -100,7 +100,7 @@ class QueueConsumer:
 
             self.producer.produce_pet_processed({"id": pet_id, "data": neighbours})
 
-            print(f"Item {pet_id} processed!")
+            print(f"Item {pet_id} refreshed!")
         except Exception as e:
             self.producer.produce_pet_error(
                 {
