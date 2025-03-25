@@ -35,7 +35,6 @@ class MilvusDatabase(VectorDatabase):
                 is_primary=True,
             ),
             FieldSchema(name="vector", dtype=DataType.FLOAT_VECTOR, dim=512),
-            FieldSchema(name="color", dtype=DataType.VARCHAR, max_length=20),
             FieldSchema(name="type", dtype=DataType.VARCHAR, max_length=5),
         ]
         schema = CollectionSchema(
@@ -67,7 +66,6 @@ class MilvusDatabase(VectorDatabase):
                 {
                     "id": metadata["id"],
                     "vector": vector,
-                    "color": metadata["color"],
                     "type": metadata["type"],
                 },
             ],

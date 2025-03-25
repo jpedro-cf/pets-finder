@@ -49,7 +49,6 @@ class QueueConsumer:
             pet_id = data.get("id")
             request_id = data.get("requestId", None)
             image_key = data.get("image")
-            color = data.get("color")
             pet_type = data.get("type")
 
             image_bytes = self.object_storage.download_image(image_key)
@@ -60,7 +59,7 @@ class QueueConsumer:
 
             self.db.insert_data(vector, data)
 
-            metadata = {"id": pet_id, "type": pet_type, "color": color}
+            metadata = {"id": pet_id, "type": pet_type}
             neighbours = self.db.search(vector, 4, metadata)
 
             self.producer.produce_pet_processed(
