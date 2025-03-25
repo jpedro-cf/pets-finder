@@ -54,22 +54,22 @@ public class PetsController {
         }
 
     }
-
-    @PostMapping(path = "search",consumes = "multipart/form-data")
-    public ResponseEntity search(@Valid @ModelAttribute SearchPetsDTO data){
-        try{
-            List<PetEntity> res = service.search(data);
-            return ResponseEntity.ok(res);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error occurred");
-        }
-    }
-
     @GetMapping("{id}")
     public ResponseEntity getPet(@PathVariable UUID id){
         try{
             PetResponseDTO data = service.getPetData(id.toString());
             return ResponseEntity.ok(data);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error occurred");
+        }
+    }
+
+    @GetMapping()
+    public ResponseEntity getPets(@RequestParam String ids){
+        try{
+            List<String> list = List.of(ids.split(","));
+            List<PetEntity> res = service.findPetsByIds(list);
+            return ResponseEntity.ok(res);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error occurred");
         }

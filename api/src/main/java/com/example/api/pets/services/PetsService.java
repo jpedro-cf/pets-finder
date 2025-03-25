@@ -8,7 +8,6 @@ import com.example.api.pets.dto.SearchPetsDTO;
 import com.example.api.pets.dto.SimilarPetsDTO;
 import com.example.api.pets.entities.PetEntity;
 import com.example.api.pets.enums.PetStatusEnum;
-import com.example.api.pets.http.PetSimilarityHttp;
 import com.example.api.pets.messaging.PetsProducer;
 import com.example.api.pets.messaging.dto.PetRefreshEventDTO;
 import com.example.api.pets.repositories.PetsRepository;
@@ -32,8 +31,6 @@ public class PetsService {
     private PetsProducer producer;
     @Autowired
     private CacheService<SimilarPetsDTO> cacheService;
-    @Autowired
-    private PetSimilarityHttp petsHttp;
 
     private final Logger logger = LoggerFactory.getLogger(PetsService.class);
 
@@ -64,19 +61,12 @@ public class PetsService {
         return pet;
     }
 
-    public List<PetEntity> search(SearchPetsDTO searchData) {
-        List<String> res = petsHttp.requestSimilarPets(searchData.text(), searchData.image());
-        List<PetEntity> pets = res.stream()
-                .map((item) -> {
-                    try {
-                        return getPetById(item);
-                    } catch (Exception e) {
-                        return null;
-                    }
-                })
-                .collect(Collectors.toList());
+    public List<PetEntity> findPetsByIds(List<String> ids) {
+        Iterable<UUID> uuids = ids.stream().
+                map(UUID::fromString).
+                toList();
 
-        return pets;
+        return repository.findAllById(uuids);
     }
 
     public PetResponseDTO getPetData(String id) throws Exception{

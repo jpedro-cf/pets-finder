@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class PetProcessedConsumer {
@@ -31,24 +32,14 @@ public class PetProcessedConsumer {
 
     @RabbitListener(queues = RabbitMQConfig.PET_PROCESSED_QUEUE)
     public void consume(PetProcessedEventDTO message){
-        List<SimilarPetsDTO> similarPets = new ArrayList<>();
-
-        for (String id: message.data()){
-            try {
-                PetEntity pet = petsService.getPetById(id);
-                if(!pet.getStatus().equals(PetStatusEnum.PROCESSED)){
-                    continue;
-                }
-                similarPets.add(
-                        new SimilarPetsDTO(pet.getId().toString(),
-                                            pet.getImage(),
-                                            pet.getLocation(),
-                                            pet.getDate())
-                );
-            } catch (Exception e) {
-                logger.error("Error getting Pet from database: " + e.getMessage());
-            }
-        }
+        List<PetEntity> pets = petsService.findPetsByIds(message.data());
+        List<SimilarPetsDTO> similarPets = pets.stream()
+                .filter(pet -> pet.getStatus().equals(PetStatusEnum.PROCESSED))
+                .map(pet -> new SimilarPetsDTO(pet.getId().toString(),
+                        pet.getImage(),
+                        pet.getLocation(),
+                        pet.getDate()))
+                .toList();
 
 
         try {

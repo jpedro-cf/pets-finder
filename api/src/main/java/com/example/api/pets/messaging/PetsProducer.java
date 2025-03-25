@@ -20,8 +20,7 @@ public class PetsProducer {
                 pet.getId().toString(),
                 requestId.orElse(null),
                 pet.getImage(),
-                pet.getType().getValue(),
-                pet.getColor()
+                pet.getType().getValue()
         );
 
         template.convertAndSend(RabbitMQConfig.PET_EXCHANGE_NAME,
