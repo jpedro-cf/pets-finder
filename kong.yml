@@ -1,0 +1,19 @@
+_format_version: '3.0'
+
+services:
+    - name: main-service
+      url: http://172.17.0.1:8080
+      routes:
+          - name: main-routes
+            paths:
+                - /pets
+                - /auth
+            strip_path: false
+
+    - name: similarity-service
+      url: http://172.17.0.1:3333
+      routes:
+          - name: similarity-routes
+            paths:
+                - /similarity
+            strip_path: true
