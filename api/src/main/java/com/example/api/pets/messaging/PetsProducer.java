@@ -2,7 +2,7 @@ package com.example.api.pets.messaging;
 
 import com.example.api.config.RabbitMQConfig;
 import com.example.api.pets.messaging.dto.PetCreatedEventDTO;
-import com.example.api.pets.messaging.dto.SimilarityEventDTO;
+import com.example.api.pets.messaging.dto.PetRefreshEventDTO;
 import com.example.api.pets.entities.PetEntity;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +29,9 @@ public class PetsProducer {
                                 event);
     }
 
-    public void produceSimilarityRequest(SimilarityEventDTO event){
+    public void produceRefreshRequest(PetRefreshEventDTO event){
         template.convertAndSend(RabbitMQConfig.PET_EXCHANGE_NAME,
-                                RabbitMQConfig.SIMILARITY_REQUESTED_ROUTING_KEY,
+                                RabbitMQConfig.PET_REFRESH_ROUTING_KEY,
                                 event);
     }
 }

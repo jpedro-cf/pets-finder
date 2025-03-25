@@ -9,6 +9,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import java.nio.ByteBuffer;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -20,12 +21,13 @@ public class S3StorageService implements StorageService {
     private S3Client client;
 
     @Override
-    public String store(MultipartFile file) throws Exception {
+    public String store(MultipartFile file, Map<String, String> metadata) throws Exception {
         String fileName = UUID.randomUUID() + "-" + file.getOriginalFilename();
 
         PutObjectRequest putRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(fileName)
+                .metadata(metadata)
                 .build();
 
         RequestBody body = RequestBody.fromByteBuffer(ByteBuffer.wrap(file.getBytes()));

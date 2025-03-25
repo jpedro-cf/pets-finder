@@ -55,10 +55,10 @@ public class PetsController {
 
     }
 
-    @GetMapping(path = "search",consumes = "multipart/form-data")
+    @PostMapping(path = "search",consumes = "multipart/form-data")
     public ResponseEntity search(@Valid @ModelAttribute SearchPetsDTO data){
         try{
-            String res = service.search(data);
+            List<PetEntity> res = service.search(data);
             return ResponseEntity.ok(res);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error occurred");
@@ -71,7 +71,6 @@ public class PetsController {
             PetResponseDTO data = service.getPetData(id.toString());
             return ResponseEntity.ok(data);
         } catch (Exception e) {
-            System.out.println(e);
             return ResponseEntity.badRequest().body("Error occurred");
         }
     }

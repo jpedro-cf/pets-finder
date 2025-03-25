@@ -6,7 +6,8 @@ import com.example.api.data.connections.SSEConnections;
 import com.example.api.data.connections.SSEMessageDTO;
 import com.example.api.pets.dto.SimilarPetsDTO;
 import com.example.api.pets.entities.PetEntity;
-import com.example.api.pets.messaging.dto.ProcessFailedDTO;
+import com.example.api.pets.enums.PetStatusEnum;
+import com.example.api.pets.messaging.dto.PetFailedEventDTO;
 import com.example.api.pets.services.PetsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class DataFailedConsumer {
+public class PetFailedConsumer {
     @Autowired
     private SSEConnections sseConnections;
     @Autowired
@@ -25,17 +26,24 @@ public class DataFailedConsumer {
     @Autowired
     private PetsService petsService;
 
-    private final Logger logger = LoggerFactory.getLogger(DataFailedConsumer.class);
+    private final Logger logger = LoggerFactory.getLogger(PetFailedConsumer.class);
 
-    @RabbitListener(queues = RabbitMQConfig.DATA_FAILED_QUEUE)
-    public void consume(ProcessFailedDTO message){
-        if(message.id().isPresent()){
-            cacheService.deleteKey(message.id().get());
-            petsService.delete(message.id().get());
+    @RabbitListener(queues = RabbitMQConfig.PET_FAILED_QUEUE)
+    public void consume(PetFailedEventDTO message){
+        try{
+            PetEntity pet = petsService.getPetById(message.id());
+            if(pet.getStatus().equals(PetStatusEnum.PROCESSING)){
+                petsService.delete(pet.getId().toString());
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
         }
-        sseConnections.sendMessage(
-                new SSEMessageDTO(message.requestId(), "failed", message.info())
-        );
+        if(message.requestId().isPresent()){
+            sseConnections.sendMessage(
+                    new SSEMessageDTO(message.requestId().get(), "failed", message.info())
+            );
+
+        }
         logger.error(message.info());
     }
 }

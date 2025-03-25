@@ -3,6 +3,8 @@ package com.example.api.pets.entities;
 import com.example.api.pets.enums.PetStatusEnum;
 import com.example.api.pets.enums.PetTypeEnum;
 import com.example.api.users.entities.UserEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -38,5 +40,6 @@ public class PetEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private UserEntity user;
 }

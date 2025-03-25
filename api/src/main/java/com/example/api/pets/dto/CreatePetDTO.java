@@ -7,8 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-public record CreatePetDTO(String description,
-                           String color,
+public record CreatePetDTO(String color,
                            MultipartFile image,
                            PetTypeEnum type,
                            String location,

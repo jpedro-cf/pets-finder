@@ -17,7 +17,7 @@ public class MainStorageService implements StorageService {
         );
     }
     @Override
-    public String store(MultipartFile file) throws Exception {
-        return storageMap.get("aws").store(file);
+    public String store(MultipartFile file, Map<String, String> metadata) throws Exception {
+        return storageMap.get("aws").store(file, metadata);
     }
 }

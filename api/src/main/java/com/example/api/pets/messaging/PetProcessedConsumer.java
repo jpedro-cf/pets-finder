@@ -6,7 +6,7 @@ import com.example.api.data.connections.SSEConnections;
 import com.example.api.data.connections.SSEMessageDTO;
 import com.example.api.pets.entities.PetEntity;
 import com.example.api.pets.enums.PetStatusEnum;
-import com.example.api.pets.messaging.dto.DataProcessedDTO;
+import com.example.api.pets.messaging.dto.PetProcessedEventDTO;
 import com.example.api.pets.dto.SimilarPetsDTO;
 import com.example.api.pets.services.PetsService;
 import org.slf4j.Logger;
@@ -17,10 +17,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Component
-public class DataProcessedConsumer {
+public class PetProcessedConsumer {
     @Autowired
     private CacheService<List<SimilarPetsDTO>> cacheService;
     @Autowired
@@ -28,15 +27,18 @@ public class DataProcessedConsumer {
     @Autowired
     private PetsService petsService;
 
-    private final Logger logger = LoggerFactory.getLogger(DataProcessedConsumer.class);
+    private final Logger logger = LoggerFactory.getLogger(PetProcessedConsumer.class);
 
-    @RabbitListener(queues = RabbitMQConfig.DATA_PROCESSED_QUEUE)
-    public void consume(DataProcessedDTO message){
+    @RabbitListener(queues = RabbitMQConfig.PET_PROCESSED_QUEUE)
+    public void consume(PetProcessedEventDTO message){
         List<SimilarPetsDTO> similarPets = new ArrayList<>();
 
         for (String id: message.data()){
             try {
                 PetEntity pet = petsService.getPetById(id);
+                if(!pet.getStatus().equals(PetStatusEnum.PROCESSED)){
+                    continue;
+                }
                 similarPets.add(
                         new SimilarPetsDTO(pet.getId().toString(),
                                             pet.getImage(),
@@ -48,15 +50,20 @@ public class DataProcessedConsumer {
             }
         }
 
-        if(message.id().isPresent()){
-            try {
-                String petId = message.id().get();
-                cacheService.setValue(petId, similarPets);
-                petsService.updateStatus(petId, PetStatusEnum.PROCESSED);
 
-            } catch (Exception e) {
-                logger.error("Error after pet being processed: " + e.getMessage());
+        try {
+            PetEntity pet = petsService.getPetById(message.id());
+            cacheService.setValue(message.id(), similarPets);
+
+            pet.setStatus(PetStatusEnum.PROCESSED);
+            if(message.description().isPresent()){
+                pet.setDescription(message.description().get());
             }
+
+            petsService.update(pet);
+
+        } catch (Exception e) {
+            logger.error("Error after pet being processed: " + e.getMessage());
         }
 
         if(message.requestId().isPresent()){
