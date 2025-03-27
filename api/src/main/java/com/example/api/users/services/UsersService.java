@@ -64,12 +64,4 @@ public class UsersService {
         return user;
     }
 
-    public void delete(UUID id) throws Exception{
-        if(this.repository.findById(id).isEmpty()){
-            throw new BadRequestException("User not found.");
-        }
-
-        this.repository.deleteById(id);
-    }
-
 }

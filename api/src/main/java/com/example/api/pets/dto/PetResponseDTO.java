@@ -14,6 +14,7 @@ public record PetResponseDTO(String id,
                              String status,
                              String color,
                              String description,
+                             @JsonProperty("contact_info")
                              String contactInfo,
                              @JsonProperty("similar")
                              List<?> similar,

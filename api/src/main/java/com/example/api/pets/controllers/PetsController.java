@@ -11,6 +11,8 @@ import com.example.api.pets.services.PetsService;
 import com.example.api.users.entities.UserEntity;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -64,15 +67,19 @@ public class PetsController {
         }
     }
 
-    @GetMapping()
-    public ResponseEntity getPets(@RequestParam String ids){
+    @GetMapping("ids")
+    public ResponseEntity findByIds(@RequestParam String data){
         try{
-            List<String> list = List.of(ids.split(","));
-            List<PetEntity> res = service.findPetsByIds(list);
-            return ResponseEntity.ok(res);
+            List<String> list = List.of(data.split(","));
+            List<PetEntity> pets = service.findPetsByIds(list);
+            return ResponseEntity.ok(pets);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error occurred");
         }
+    }
+    @GetMapping()
+    public ResponseEntity findAll(Pageable pageable){
+        return ResponseEntity.ok(service.listPets(pageable));
     }
 
 }

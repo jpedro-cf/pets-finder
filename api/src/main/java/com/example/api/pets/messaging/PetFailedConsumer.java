@@ -31,7 +31,7 @@ public class PetFailedConsumer {
     @RabbitListener(queues = RabbitMQConfig.PET_FAILED_QUEUE)
     public void consume(PetFailedEventDTO message){
         try{
-            PetEntity pet = petsService.getPetById(message.id());
+            PetEntity pet = petsService.findPetById(message.id());
             if(pet.getStatus().equals(PetStatusEnum.PROCESSING)){
                 petsService.delete(pet.getId().toString());
             }

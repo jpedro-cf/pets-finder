@@ -43,7 +43,7 @@ public class PetProcessedConsumer {
 
 
         try {
-            PetEntity pet = petsService.getPetById(message.id());
+            PetEntity pet = petsService.findPetById(message.id());
             cacheService.setValue(message.id(), similarPets);
 
             pet.setStatus(PetStatusEnum.PROCESSED);

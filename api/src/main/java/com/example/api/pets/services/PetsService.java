@@ -16,6 +16,8 @@ import org.apache.coyote.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -33,14 +35,6 @@ public class PetsService {
     private CacheService<SimilarPetsDTO> cacheService;
 
     private final Logger logger = LoggerFactory.getLogger(PetsService.class);
-
-
-    public PetEntity getPetById(String id) throws Exception{
-        PetEntity pet = this.repository.findById(UUID.fromString(id))
-                .orElseThrow(() -> new BadRequestException("Pet not found"));
-
-        return pet;
-    }
 
     public PetEntity create(CreatePetDTO data, UserEntity user) throws Exception {
         String image = storageService.store(data.image(), Map.of("expire", "false"));
@@ -69,12 +63,15 @@ public class PetsService {
         return repository.findAllById(uuids);
     }
 
+    public Page<PetEntity> listPets(Pageable pageable){
+        return repository.findByStatus(pageable, PetStatusEnum.PROCESSED);
+    }
+
     public PetResponseDTO getPetData(String id) throws Exception{
-        PetEntity pet = getPetById(id);
+        PetEntity pet = findPetById(id);
         List<SimilarPetsDTO> similar = findSimilar(pet);
 
-        return new PetResponseDTO(
-                pet.getId().toString(),
+        return new PetResponseDTO(pet.getId().toString(),
                 pet.getImage(),
                 pet.getLocation(),
                 pet.getType().getValue(),
@@ -82,9 +79,7 @@ public class PetsService {
                 pet.getColor(),
                 pet.getDescription(),
                 pet.getUser().getNumber(),
-                similar,
-                pet.getDate()
-        );
+                similar, pet.getDate());
     }
 
     public List<SimilarPetsDTO> findSimilar(PetEntity pet){
@@ -95,6 +90,11 @@ public class PetsService {
         }
 
         return similarPets != null ? similarPets : Collections.emptyList();
+    }
+
+    public PetEntity findPetById(String id) throws Exception{
+        return this.repository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new BadRequestException("Pet not found"));
     }
 
     public void update(PetEntity data){

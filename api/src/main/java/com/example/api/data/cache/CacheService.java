@@ -20,15 +20,16 @@ public class CacheService<T> {
     private final Logger logger = LoggerFactory.getLogger(CacheService.class);
 
     public List<T> getValue(String key){
-        String jsonValue = template.opsForValue().get(key);
-        if (jsonValue != null) {
-            try {
-                return mapper.readValue(jsonValue, new TypeReference<List<T>>() {});
-            } catch (Exception e) {
-                logger.error("Error reading cache: " + e.getMessage());
+        try {
+            String jsonValue = template.opsForValue().get(key);
+            if (jsonValue != null) {
+                    return mapper.readValue(jsonValue, new TypeReference<List<T>>() {});
             }
+        } catch (Exception e) {
+            logger.error("Error reading cache: " + e.getMessage());
+
         }
-        return null;
+        return List.of();
     }
 
     public void setValue(String key, T value){

@@ -11,7 +11,7 @@ public class MainStorageService implements StorageService {
     private final Map<String, StorageService> storageMap;
 
     public MainStorageService(S3StorageService s3StorageService){
-        // In case of needing to upload to different locations later
+        // In case we need to upload to different locations later
         storageMap = Map.of(
                 "aws", s3StorageService
         );
