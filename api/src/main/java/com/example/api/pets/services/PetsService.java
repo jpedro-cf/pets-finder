@@ -39,9 +39,9 @@ public class PetsService {
     private final Logger logger = LoggerFactory.getLogger(PetsService.class);
 
     public PetEntity create(CreatePetDTO data, UserEntity user) throws Exception {
-        Optional<String> requestValid = validator.validate(new CreatePetValidation(data, user));
-        if(requestValid.isPresent()){
-            throw new BadRequestException(requestValid.get());
+        Optional<String> validationErrors = validator.validate(new CreatePetValidation(data, user));
+        if(validationErrors.isPresent()){
+            throw new BadRequestException(validationErrors.get());
         }
 
         String image = storageService.store(data.image(), Map.of("expire", "false"));

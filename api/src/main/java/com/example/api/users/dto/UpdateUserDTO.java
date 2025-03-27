@@ -1,4 +1,9 @@
 package com.example.api.users.dto;
 
-public record UpdateUserDTO(String email, String number) {
+import java.util.Optional;
+
+public record UpdateUserDTO(Optional<String> email,
+                            Optional<String> number,
+                            Optional<String> password,
+                            String passwordConfirmation) {
 }
