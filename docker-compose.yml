@@ -3,7 +3,7 @@ version: '3.8'
 services:
     redis:
         image: redis
-        container_name: main-redis
+        container_name: redis
         ports:
             - '6379:6379'
         networks:
@@ -11,7 +11,7 @@ services:
 
     pgadmin:
         image: dpage/pgadmin4
-        container_name: main-pgadmin
+        container_name: pgadmin
         ports:
             - '15432:80'
         environment:
@@ -24,7 +24,7 @@ services:
 
     postgres:
         image: postgres
-        container_name: main-postgres
+        container_name: postgres
         ports:
             - '5432:5432'
         environment:
@@ -40,6 +40,26 @@ services:
         ports:
             - '5672:5672'
             - '15672:15672'
+    kong:
+        container_name: api-gateway
+        image: kong:latest
+        volumes:
+            - ./kong.yml:/usr/local/kong/declarative/kong.yml
+        environment:
+            - KONG_DATABASE=off
+            - KONG_DECLARATIVE_CONFIG=/usr/local/kong/declarative/kong.yml
+            - KONG_PROXY_ACCESS_LOG=/dev/stdout
+            - KONG_ADMIN_ACCESS_LOG=/dev/stdout
+            - KONG_PROXY_ERROR_LOG=/dev/stderr
+            - KONG_ADMIN_ERROR_LOG=/dev/stderr
+            - KONG_ADMIN_LISTEN=0.0.0.0:8001
+            - KONG_ADMIN_GUI_URL=http://localhost:8002
+        ports:
+            - '8800:8000'
+            - '8001:8001'
+            - '8002:8002'
+        networks:
+            - pet-finder-network
     etcd:
         container_name: milvus-etcd
         image: quay.io/coreos/etcd:v3.5.0
@@ -69,23 +89,6 @@ services:
             retries: 3
         networks:
             - pet-finder-network
-    kong:
-        image: kong:latest
-        volumes:
-            - ./kong.yml:/usr/local/kong/declarative/kong.yml
-        environment:
-            - KONG_DATABASE=off
-            - KONG_DECLARATIVE_CONFIG=/usr/local/kong/declarative/kong.yml
-            - KONG_PROXY_ACCESS_LOG=/dev/stdout
-            - KONG_ADMIN_ACCESS_LOG=/dev/stdout
-            - KONG_PROXY_ERROR_LOG=/dev/stderr
-            - KONG_ADMIN_ERROR_LOG=/dev/stderr
-            - KONG_ADMIN_LISTEN=0.0.0.0:8001
-            - KONG_ADMIN_GUI_URL=http://localhost:8002
-        ports:
-            - '8800:8000'
-            - '8001:8001'
-            - '8002:8002'
 
     standalone:
         container_name: milvus-standalone
