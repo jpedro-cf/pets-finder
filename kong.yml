@@ -8,6 +8,7 @@ services:
             paths:
                 - /pets
                 - /auth
+                - /users
             strip_path: false
 
     - name: similarity-service
