@@ -96,6 +96,7 @@ class QueueConsumer:
             pet_id = data.get("id")
             db_data = self.db.get_by_id(pet_id)
             if not db_data:
+                ch.basic_ack(delivery_tag=method.delivery_tag)
                 raise Exception("Pet with this id not found.")
 
             vector = db_data["vector"]
