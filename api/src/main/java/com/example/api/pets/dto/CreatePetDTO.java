@@ -2,6 +2,7 @@ package com.example.api.pets.dto;
 
 import com.example.api.pets.enums.PetTypeEnum;
 import com.example.api.users.entities.UserEntity;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;

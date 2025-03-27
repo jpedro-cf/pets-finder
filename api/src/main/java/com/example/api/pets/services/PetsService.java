@@ -4,13 +4,14 @@ import com.example.api.data.cache.CacheService;
 import com.example.api.data.storage.MainStorageService;
 import com.example.api.pets.dto.CreatePetDTO;
 import com.example.api.pets.dto.PetResponseDTO;
-import com.example.api.pets.dto.SearchPetsDTO;
 import com.example.api.pets.dto.SimilarPetsDTO;
 import com.example.api.pets.entities.PetEntity;
 import com.example.api.pets.enums.PetStatusEnum;
 import com.example.api.pets.messaging.PetsProducer;
 import com.example.api.pets.messaging.dto.PetRefreshEventDTO;
 import com.example.api.pets.repositories.PetsRepository;
+import com.example.api.pets.validators.CreatePetValidation;
+import com.example.api.pets.validators.CreatePetRequestValidator;
 import com.example.api.users.entities.UserEntity;
 import org.apache.coyote.BadRequestException;
 import org.slf4j.Logger;
@@ -21,7 +22,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class PetsService {
@@ -33,10 +33,17 @@ public class PetsService {
     private PetsProducer producer;
     @Autowired
     private CacheService<SimilarPetsDTO> cacheService;
+    @Autowired
+    private CreatePetRequestValidator validator;
 
     private final Logger logger = LoggerFactory.getLogger(PetsService.class);
 
     public PetEntity create(CreatePetDTO data, UserEntity user) throws Exception {
+        Optional<String> requestValid = validator.validate(new CreatePetValidation(data, user));
+        if(requestValid.isPresent()){
+            throw new BadRequestException(requestValid.get());
+        }
+
         String image = storageService.store(data.image(), Map.of("expire", "false"));
 
         PetEntity pet = new PetEntity();
