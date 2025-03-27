@@ -13,6 +13,9 @@ public class EmailInUseValidator implements Validator<UpdateUserValidator> {
     private UsersRepository repository;
     @Override
     public Optional<String> validate(UpdateUserValidator updateData) {
+        if(updateData.data().email().isEmpty()){
+            return Optional.empty();
+        }
         if(repository.findByEmail(updateData.data().email().get()).isPresent()){
             return Optional.of("Esse e-mail já está em uso");
         }

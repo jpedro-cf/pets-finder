@@ -13,6 +13,9 @@ public class NumberAvailableValidator implements Validator<UpdateUserValidator> 
     private UsersRepository repository;
     @Override
     public Optional<String> validate(UpdateUserValidator updateData) {
+        if(updateData.data().number().isEmpty()){
+            return Optional.empty();
+        }
         if(repository.findByNumber(updateData.data().number().get()).isPresent()){
             return Optional.of("Esse número de celular já está em uso");
         }
