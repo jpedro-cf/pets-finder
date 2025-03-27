@@ -13,4 +13,6 @@ redis
 fastapi
 uvicorn
 python-multipart
+ollama
+google-genai
 git+https://github.com/openai/CLIP.git

@@ -4,6 +4,7 @@ import pika
 from aws.s3 import S3Client
 from database.database import VectorDatabase
 from embeddings.embeddings import DataEmbedding
+from processors.image_processor import ImageProcessor
 from queues.producer import QueueProducer
 
 from queues.config import rabbit_mq_config as config
@@ -15,11 +16,13 @@ class QueueConsumer:
         database: VectorDatabase,
         storage: S3Client,
         embedding_generator: DataEmbedding,
+        image_processor: ImageProcessor,
     ):
         self.db = database
         self.object_storage = storage
         self.generator = embedding_generator
         self.producer = QueueProducer()
+        self.image_processor = image_processor
 
     def listen(self):
         self.connection = pika.BlockingConnection(
@@ -32,12 +35,12 @@ class QueueConsumer:
         self.channel.basic_consume(
             queue=config["PET_CREATED_QUEUE"],
             on_message_callback=self.process_pet_created,
-            auto_ack=True,
+            auto_ack=False,
         )
         self.channel.basic_consume(
             queue=config["PET_REFRESH_QUEUE"],
             on_message_callback=self.process_refresh,
-            auto_ack=True,
+            auto_ack=False,
         )
         print("Consumer ready..")
         self.channel.start_consuming()
@@ -56,18 +59,21 @@ class QueueConsumer:
                 raise Exception("Image not found on S3")
 
             vector = self.generator.process_embedding("image", image_bytes)
+            description = self.image_processor.describe_image(image_bytes)
 
             self.db.insert_data(vector, data)
 
             metadata = {"id": pet_id, "type": pet_type}
             neighbours = self.db.search(vector, 4, metadata)
 
+            ch.basic_ack(delivery_tag=method.delivery_tag)
+
             self.producer.produce_pet_processed(
                 {
                     "id": pet_id,
                     "requestId": request_id,
                     "data": neighbours,
-                    "description": "data_of_description",
+                    "description": description,
                 }
             )
 
@@ -99,6 +105,7 @@ class QueueConsumer:
             neighbours = self.db.search(vector, 4, metadata)
 
             self.producer.produce_pet_processed({"id": pet_id, "data": neighbours})
+            ch.basic_ack(delivery_tag=method.delivery_tag)
 
             print(f"Item {pet_id} refreshed!")
         except Exception as e:

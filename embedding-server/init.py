@@ -6,6 +6,7 @@ from os.path import join, dirname
 from dotenv import load_dotenv
 
 from embeddings.embedding_generator import EmbeddingGenerator
+from processors.image_processor import ImageProcessor
 from rest.api import Api
 
 load_dotenv(override=True)
@@ -23,8 +24,11 @@ def start():
 
     database = MilvusDatabase("conn1")
     obj_storage = S3Client()
+    image_processor = ImageProcessor()
 
-    consumer = QueueConsumer(database, obj_storage, embedding_generator)
+    consumer = QueueConsumer(
+        database, obj_storage, embedding_generator, image_processor
+    )
     consumer_thread = threading.Thread(target=consumer.listen, daemon=True)
     consumer_thread.start()
 
