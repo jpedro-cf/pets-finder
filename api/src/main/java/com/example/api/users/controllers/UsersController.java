@@ -19,11 +19,6 @@ public class UsersController {
     @PutMapping("{id}")
     public ResponseEntity<UserEntity> update(@PathVariable UUID id,
                                              @RequestBody @Valid UpdateUserDTO data){
-        try{
-            return ResponseEntity.ok(service.update(id, data));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-
+        return ResponseEntity.ok(service.update(id, data));
     }
 }

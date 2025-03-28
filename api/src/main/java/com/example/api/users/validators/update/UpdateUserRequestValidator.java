@@ -13,11 +13,7 @@ public class UpdateUserRequestValidator implements Validator<UpdateUserValidator
     private List<Validator<UpdateUserValidator>> validators;
 
     @Override
-    public Optional<String> validate(UpdateUserValidator updateData) {
-        return validators.stream()
-                .map(validator -> validator.validate(updateData))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .findFirst();
+    public void validate(UpdateUserValidator updateData) {
+        validators.forEach(v -> v.validate(updateData));
     }
 }

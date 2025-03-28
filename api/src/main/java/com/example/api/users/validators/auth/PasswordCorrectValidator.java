@@ -1,5 +1,6 @@
 package com.example.api.users.validators.auth;
 
+import com.example.api.data.exceptions.InvalidArgumentException;
 import com.example.api.data.validators.Validator;
 import com.example.api.users.entities.UserEntity;
 import com.example.api.users.repositories.UsersRepository;
@@ -17,8 +18,10 @@ public class PasswordCorrectValidator implements Validator<AuthenticateUserValid
     private UsersRepository repository;
 
     @Override
-    public Optional<String> validate(AuthenticateUserValidator data) {
+    public void validate(AuthenticateUserValidator data) {
         boolean valid = encoder.matches(data.password(), data.user().getPassword());
-        return valid ? Optional.empty() : Optional.of("E-mail or password invalid.");
+        if(!valid){
+            throw new InvalidArgumentException("E-mail or password invalid.");
+        }
     }
 }

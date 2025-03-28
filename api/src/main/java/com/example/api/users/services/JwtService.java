@@ -1,6 +1,5 @@
 package com.example.api.users.services;
 
-import com.example.api.users.entities.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;

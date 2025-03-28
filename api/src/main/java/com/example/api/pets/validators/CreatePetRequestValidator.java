@@ -13,11 +13,7 @@ public class CreatePetRequestValidator implements Validator<CreatePetValidation>
     private List<Validator<CreatePetValidation>> validators;
 
     @Override
-    public Optional<String> validate(CreatePetValidation data) {
-        return validators.stream()
-                .map(validator -> validator.validate(data))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .findFirst();
+    public void validate(CreatePetValidation data) {
+        validators.forEach(v -> v.validate(data));
     }
 }

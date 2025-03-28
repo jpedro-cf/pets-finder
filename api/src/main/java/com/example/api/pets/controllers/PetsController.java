@@ -45,37 +45,25 @@ public class PetsController {
 
     @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity create(@Valid @ModelAttribute CreatePetDTO data){
-        try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            UserEntity user = (UserEntity) auth.getPrincipal();
-            PetEntity pet = service.create(data, user);
 
-            return ResponseEntity.ok(pet);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        UserEntity user = (UserEntity) auth.getPrincipal();
+        PetEntity pet = service.create(data, user);
 
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error occurred");
-        }
+        return ResponseEntity.ok(pet);
 
     }
     @GetMapping("{id}")
     public ResponseEntity getPet(@PathVariable UUID id){
-        try{
-            PetResponseDTO data = service.getPetData(id.toString());
-            return ResponseEntity.ok(data);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error occurred");
-        }
+        PetResponseDTO data = service.getPetData(id.toString());
+        return ResponseEntity.ok(data);
     }
 
     @GetMapping("ids")
     public ResponseEntity findByIds(@RequestParam String data){
-        try{
-            List<String> list = List.of(data.split(","));
-            List<PetEntity> pets = service.findPetsByIds(list);
-            return ResponseEntity.ok(pets);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error occurred");
-        }
+        List<String> list = List.of(data.split(","));
+        List<PetEntity> pets = service.findPetsByIds(list);
+        return ResponseEntity.ok(pets);
     }
     @GetMapping()
     public ResponseEntity findAll(Pageable pageable){

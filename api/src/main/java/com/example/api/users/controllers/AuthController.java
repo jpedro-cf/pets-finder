@@ -22,14 +22,14 @@ public class AuthController {
     private UsersService usersService;
 
     @PostMapping("login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid LoginRequestDTO request) throws Exception{
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid LoginRequestDTO request){
         String token = this.authService.authenticate(request.email(), request.password());
 
         return ResponseEntity.ok(new LoginResponseDTO(token));
     }
 
     @PostMapping("register")
-    public ResponseEntity<UserEntity> login(@RequestBody @Valid RegisterRequestDTO request) throws Exception{
+    public ResponseEntity<UserEntity> login(@RequestBody @Valid RegisterRequestDTO request){
         UserEntity user = this.usersService.create(request);
 
         return ResponseEntity.ok(user);

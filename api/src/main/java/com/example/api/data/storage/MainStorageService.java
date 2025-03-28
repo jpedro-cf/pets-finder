@@ -5,6 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class MainStorageService implements StorageService {
@@ -17,7 +18,7 @@ public class MainStorageService implements StorageService {
         );
     }
     @Override
-    public String store(MultipartFile file, Map<String, String> metadata) throws Exception {
+    public Optional<String> store(MultipartFile file, Map<String, String> metadata) {
         return storageMap.get("aws").store(file, metadata);
     }
 }

@@ -1,6 +1,8 @@
 package com.example.api.pets.services;
 
 import com.example.api.data.cache.CacheService;
+import com.example.api.data.exceptions.ApplicationException;
+import com.example.api.data.exceptions.NotFoundException;
 import com.example.api.data.storage.MainStorageService;
 import com.example.api.pets.dto.CreatePetDTO;
 import com.example.api.pets.dto.PetResponseDTO;
@@ -38,17 +40,17 @@ public class PetsService {
 
     private final Logger logger = LoggerFactory.getLogger(PetsService.class);
 
-    public PetEntity create(CreatePetDTO data, UserEntity user) throws Exception {
-        Optional<String> validationErrors = validator.validate(new CreatePetValidation(data, user));
-        if(validationErrors.isPresent()){
-            throw new BadRequestException(validationErrors.get());
+    public PetEntity create(CreatePetDTO data, UserEntity user) {
+        validator.validate(new CreatePetValidation(data, user));
+
+
+        Optional<String> image = storageService.store(data.image(), Map.of("expire", "false"));
+        if(image.isEmpty()){
+            throw new ApplicationException("Falha ao fazer upload da imagem.");
         }
-
-        String image = storageService.store(data.image(), Map.of("expire", "false"));
-
         PetEntity pet = new PetEntity();
         pet.setColor(data.color());
-        pet.setImage(image);
+        pet.setImage(image.get());
         pet.setUser(user);
         pet.setStatus(PetStatusEnum.PROCESSING);
         pet.setLocation(data.location());
@@ -74,7 +76,7 @@ public class PetsService {
         return repository.findByStatus(pageable, PetStatusEnum.PROCESSED);
     }
 
-    public PetResponseDTO getPetData(String id) throws Exception{
+    public PetResponseDTO getPetData(String id) {
         PetEntity pet = findPetById(id);
         List<SimilarPetsDTO> similar = findSimilar(pet);
 
@@ -99,9 +101,9 @@ public class PetsService {
         return similarPets != null ? similarPets : Collections.emptyList();
     }
 
-    public PetEntity findPetById(String id) throws Exception{
+    public PetEntity findPetById(String id) {
         return this.repository.findById(UUID.fromString(id))
-                .orElseThrow(() -> new BadRequestException("Pet not found"));
+                .orElseThrow(() -> new NotFoundException("Pet não encontrado."));
     }
 
     public void update(PetEntity data){

@@ -13,12 +13,8 @@ public class RegisterRequestValidator implements Validator<RegisterUserValidator
     @Autowired
     private List<Validator<RegisterUserValidator>> validators;
     @Override
-    public Optional<String> validate(RegisterUserValidator request) {
-        return validators.stream()
-                .map(validator -> validator.validate(request))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .findFirst();
+    public void validate(RegisterUserValidator request) {
+        validators.forEach(v -> v.validate(request));
     }
 
 }

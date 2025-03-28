@@ -12,11 +12,7 @@ public class AuthRequestValidator implements Validator<AuthenticateUserValidator
     @Autowired
     private List<Validator<AuthenticateUserValidator>> validators;
     @Override
-    public Optional<String> validate(AuthenticateUserValidator data) {
-        return validators.stream()
-                .map(validator -> validator.validate(data))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .findFirst();
+    public void validate(AuthenticateUserValidator data) {
+        validators.forEach(v -> v.validate(data));
     }
 }
