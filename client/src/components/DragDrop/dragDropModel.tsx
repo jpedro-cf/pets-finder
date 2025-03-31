@@ -6,6 +6,7 @@ type Variant = VariantProps<typeof dragDropVariants>
 
 export function useDragDrop() {
     const inputRef = useRef<HTMLInputElement | null>(null)
+    const [currentFile, setCurrentFile] = useState<File | null>(null)
     const [currentVariant, setCurrentVariant] = useState<Variant>({
         variant: 'default',
     })
@@ -43,6 +44,7 @@ export function useDragDrop() {
         if (!file.type.match('image.*')) {
             return
         }
+        setCurrentFile(file)
 
         const reader = new FileReader()
         reader.onload = () => {
@@ -54,6 +56,9 @@ export function useDragDrop() {
     return {
         inputRef,
         preview,
+        setPreview,
+        currentFile,
+        setCurrentFile,
         handleFileInputChange,
         handleDragLeave,
         handleDrop,
