@@ -1,5 +1,5 @@
 import { VariantProps } from 'class-variance-authority'
-import { useRef, useState } from 'react'
+import { createContext, useContext, useRef, useState } from 'react'
 import { dragDropVariants } from '.'
 
 type Variant = VariantProps<typeof dragDropVariants>
@@ -66,4 +66,22 @@ export function useDragDrop() {
         currentVariant,
         setCurrentVariant,
     }
+}
+
+type DragDropContext = {
+    data: ReturnType<typeof useDragDrop>
+}
+
+export const DragDropContext = createContext<DragDropContext | undefined>(
+    undefined
+)
+
+export function useDragDropContext() {
+    const context = useContext(DragDropContext)
+    if (!context) {
+        throw new Error(
+            'useDragDropContext must be used with a DragDropComponent'
+        )
+    }
+    return context
 }

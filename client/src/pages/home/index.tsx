@@ -16,25 +16,16 @@ export function Home() {
                 <Header />
                 <div className="flex flex-1 h-full">
                     <aside className="w-1/3 border-r-2 p-3">
-                        <DragDropComponent
-                            data={dragDrop}
-                            className={`cursor-${
-                                currentFile ? 'default' : 'pointer'
-                            }`}
-                        >
+                        <DragDropComponent data={dragDrop}>
                             <DragDropImagePreview
                                 src={preview}
                                 hidden={!currentFile}
                             />
                             <DragDropFileInfo
                                 className="absolute z-10 p-3 block w-80 m-5 bottom-0 bg-emerald-50"
-                                data={dragDrop}
                                 hidden={!currentFile}
                             />
-                            <DragDropContent
-                                data={dragDrop}
-                                hidden={currentFile != null}
-                            />
+                            <DragDropContent hidden={currentFile != null} />
                         </DragDropComponent>
                     </aside>
                 </div>

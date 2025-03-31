@@ -1,10 +1,14 @@
 import { Card, CardContent } from '../ui/card'
 import { cva } from 'class-variance-authority'
 import { cn, formatFileSize } from '@/lib/utils'
-import { useDragDrop } from './dragDropModel'
+import {
+    DragDropContext,
+    useDragDrop,
+    useDragDropContext,
+} from './dragDropModel'
 import { Button } from '../ui/button'
 import { CloudUpload, Image, Trash } from 'lucide-react'
-import { ReactNode, useState } from 'react'
+import { createContext, ReactNode, useState } from 'react'
 
 export const dragDropVariants = cva(
     'p-3 h-full border-2 border-emerald-600/40 border-dashed transition-all hover:bg-emerald-50 cursor-pointer',
@@ -17,6 +21,7 @@ export const dragDropVariants = cva(
         },
     }
 )
+
 interface IDragDropProps extends React.ComponentProps<'div'> {
     data: ReturnType<typeof useDragDrop>
     children: ReactNode
@@ -38,37 +43,38 @@ export function DragDropComponent({
     } = data
 
     return (
-        <Card
-            className={cn(
-                dragDropVariants({ variant: currentVariant.variant }),
-                props.className
-            )}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            onClick={() => (currentFile ? {} : inputRef.current?.click())}
-        >
-            <CardContent
-                className="p-0 rounded-md w-full h-full overflow-hidden 
-                    flex items-center flex-col justify-center relative"
+        <DragDropContext.Provider value={{ data }}>
+            <Card
+                className={cn(
+                    dragDropVariants({ variant: currentVariant.variant }),
+                    `cursor-${currentFile ? 'default' : 'pointer'}`,
+                    props.className
+                )}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={() => (currentFile ? {} : inputRef.current?.click())}
             >
-                {children}
-                <input
-                    ref={inputRef}
-                    type="file"
-                    className="hidden"
-                    onChange={handleFileInputChange}
-                />
-            </CardContent>
-        </Card>
+                <CardContent
+                    className="p-0 rounded-md w-full h-full overflow-hidden 
+                    flex items-center flex-col justify-center relative"
+                >
+                    {children}
+                    <input
+                        ref={inputRef}
+                        type="file"
+                        className="hidden"
+                        onChange={handleFileInputChange}
+                    />
+                </CardContent>
+            </Card>
+        </DragDropContext.Provider>
     )
 }
 
-interface IDragDropContent extends React.ComponentProps<'div'> {
-    data: ReturnType<typeof useDragDrop>
-}
-export function DragDropContent({ data, ...props }: IDragDropContent) {
-    const { inputRef, preview } = data
+export function DragDropContent({ ...props }: React.ComponentProps<'div'>) {
+    const { data } = useDragDropContext()
+    const { preview, inputRef } = data
     return (
         <div className="flex flex-col gap-3 items-center" {...props}>
             <Image className="text-primary/80" size={52} />
@@ -102,10 +108,9 @@ export function DragDropImagePreview({
         />
     )
 }
-interface IDragDropFileInfo extends React.ComponentProps<'div'> {
-    data: ReturnType<typeof useDragDrop>
-}
-export function DragDropFileInfo({ data, ...props }: IDragDropFileInfo) {
+
+export function DragDropFileInfo({ ...props }: React.ComponentProps<'div'>) {
+    const { data } = useDragDropContext()
     const { currentFile, setCurrentFile, setPreview } = data
     return (
         <Card {...props}>
