@@ -24,7 +24,6 @@ export const dragDropVariants = cva(
 
 interface IDragDropProps extends React.ComponentProps<'div'> {
     data: ReturnType<typeof useDragDrop>
-    children: ReactNode
 }
 
 export function DragDropComponent({
@@ -109,12 +108,16 @@ export function DragDropImagePreview({
     )
 }
 
-export function DragDropFileInfo({ ...props }: React.ComponentProps<'div'>) {
+export function DragDropFileInfo({
+    children,
+    ...props
+}: React.ComponentProps<'div'>) {
     const { data } = useDragDropContext()
     const { currentFile, setCurrentFile, setPreview } = data
     return (
         <Card {...props}>
-            <CardContent className="flex p-0 gap-3 items-center">
+            {children}
+            <CardContent className="flex p-3 gap-3 items-center">
                 <Image className="text-primary/80" size={24} />
                 <div className="flex items-center justify-between w-full">
                     <div>

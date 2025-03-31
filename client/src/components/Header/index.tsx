@@ -1,16 +1,11 @@
-import { Avatar, AvatarFallback } from '@radix-ui/react-avatar'
+import { PawPrint } from 'lucide-react'
 
 export function Header() {
     return (
         <header className="border-b-1 p-4 flex gap-3">
-            <Avatar>
-                <AvatarFallback
-                    className="bg-emerald-300/80 w-12 h-full flex font-bold 
-                items-center justify-center rounded-md text-xl"
-                >
-                    PF
-                </AvatarFallback>
-            </Avatar>
+            <div className="bg-emerald-300/80 h-full w-11 flex items-center justify-center rounded-md">
+                <PawPrint size={32} />
+            </div>
             <div>
                 <h1 className="font-bold text-lg/5">Pets Finder</h1>
                 <span className="font-normal text-sm text-gray-500">
