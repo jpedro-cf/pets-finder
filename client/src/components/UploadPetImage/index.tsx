@@ -4,44 +4,45 @@ import {
     DragDropFileInfo,
     DragDropImagePreview,
 } from '../DragDrop'
-import { useDragDrop } from '../DragDrop/dragDropModel'
-import { cva } from 'class-variance-authority'
-import { UploadPetAnimation } from '../PetUploadProgress'
-import { usePetProgress } from '../PetUploadProgress/petUploadProgressModel'
+import { ProgressAnimation } from '../progressAnimation'
 import { useEffect, useState } from 'react'
+
 export function UploadPetImage() {
-    const data = useDragDrop()
-    const { preview, currentFile } = data
-    const progress = usePetProgress('0%')
-    const { setCurrent } = progress
+    const [selectedFile, setSelectedFile] = useState<File | null>(null)
+    const [progress, setProgress] = useState('0%')
+
+    function handleFileSelected(file: File | null) {
+        if (!file) {
+            setProgress('0%')
+        }
+        setSelectedFile(file)
+    }
 
     useEffect(() => {
-        if (!currentFile) {
+        if (!selectedFile) {
             return
         }
         const steps = ['30%', '60%', '100%']
         let index = 0
-        setCurrent(steps[index])
+        setProgress(steps[index])
+
         const interval = setInterval(() => {
             index++
             if (index >= steps.length) {
                 clearInterval(interval)
                 return
             }
-            setCurrent(steps[index])
+            setProgress(steps[index])
         }, 1000)
         return () => clearInterval(interval)
-    }, [currentFile])
+    }, [selectedFile])
 
     return (
-        <DragDropComponent data={data}>
-            <DragDropContent hidden={currentFile != null} />
-            <DragDropImagePreview src={preview} hidden={!currentFile} />
-            <DragDropFileInfo
-                className="absolute z-10 overflow-hidden py-1 block w-80 m-5 bottom-0 bg-emerald-50"
-                hidden={!currentFile}
-            >
-                {currentFile && <UploadPetAnimation data={progress} />}
+        <DragDropComponent onFileSelect={handleFileSelected}>
+            <DragDropContent />
+            <DragDropImagePreview />
+            <DragDropFileInfo className="absolute z-10 overflow-hidden py-1 block w-80 m-5 bottom-0 bg-emerald-50">
+                {selectedFile && <ProgressAnimation percentage={progress} />}
             </DragDropFileInfo>
         </DragDropComponent>
     )

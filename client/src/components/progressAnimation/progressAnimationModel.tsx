@@ -1,27 +1,26 @@
 import { useAnimate } from 'motion/react'
 import { useEffect, useState } from 'react'
 
-export function usePetProgress(percentage: string) {
+export function useAnimationProgress(percentage: string) {
     const [progress, animateProgress] = useAnimate()
     const [paw, animatePaw] = useAnimate()
-    const [current, setCurrent] = useState(percentage)
 
     useEffect(() => {
         if (!progress.current) {
             return
         }
+        doAnimation()
+    }, [percentage])
 
-        startAnimation()
-    }, [current])
-    async function startAnimation() {
+    async function doAnimation() {
         await animateProgress(
             progress.current,
-            { width: current },
+            { width: percentage },
             {
                 type: 'tween',
             }
         )
-        if (current == '100%') {
+        if (percentage == '100%') {
             await animateProgress(
                 progress.current,
                 { height: '100%' },
@@ -51,7 +50,5 @@ export function usePetProgress(percentage: string) {
     return {
         progress,
         paw,
-        current,
-        setCurrent,
     }
 }

@@ -8,7 +8,7 @@ import {
 } from './dragDropModel'
 import { Button } from '../ui/button'
 import { CloudUpload, Image, Trash } from 'lucide-react'
-import { createContext, ReactNode, useState } from 'react'
+import { createContext, ReactNode, useEffect, useState } from 'react'
 
 export const dragDropVariants = cva(
     'p-3 h-full border-2 border-emerald-600/40 border-dashed transition-all hover:bg-emerald-50 cursor-pointer',
@@ -23,14 +23,15 @@ export const dragDropVariants = cva(
 )
 
 interface IDragDropProps extends React.ComponentProps<'div'> {
-    data: ReturnType<typeof useDragDrop>
+    onFileSelect: (file: File | null) => void
 }
 
 export function DragDropComponent({
-    data,
+    onFileSelect,
     children,
     ...props
 }: IDragDropProps) {
+    const data = useDragDrop({ onFileSelect })
     const {
         currentFile,
         currentVariant,
@@ -73,9 +74,13 @@ export function DragDropComponent({
 
 export function DragDropContent({ ...props }: React.ComponentProps<'div'>) {
     const { data } = useDragDropContext()
-    const { preview, inputRef } = data
+    const { preview, inputRef, currentFile } = data
     return (
-        <div className="flex flex-col gap-3 items-center" {...props}>
+        <div
+            className="flex flex-col gap-3 items-center"
+            {...props}
+            hidden={currentFile != null}
+        >
             <Image className="text-primary/80" size={52} />
             <span className="text-md leading-1 text-gray-500 font-semibold">
                 Escolha uma imagem ou arraste aqui.
@@ -99,10 +104,14 @@ export function DragDropContent({ ...props }: React.ComponentProps<'div'>) {
 export function DragDropImagePreview({
     ...props
 }: React.ComponentProps<'img'>) {
+    const { data } = useDragDropContext()
+    const { preview, currentFile } = data
     return (
         <img
             {...props}
             alt="Preview image"
+            src={preview}
+            hidden={!currentFile}
             className="h-full w-full object-cover z-0"
         />
     )
@@ -113,15 +122,15 @@ export function DragDropFileInfo({
     ...props
 }: React.ComponentProps<'div'>) {
     const { data } = useDragDropContext()
-    const { currentFile, setCurrentFile, setPreview } = data
+    const { currentFile, handleFileChange } = data
     return (
-        <Card {...props}>
+        <Card {...props} hidden={!currentFile}>
             {children}
             <CardContent className="flex p-3 gap-3 items-center">
                 <Image className="text-primary/80" size={24} />
                 <div className="flex items-center justify-between w-full">
                     <div>
-                        <span className="font-semibold">
+                        <span className="font-semibold text-gray-700">
                             {currentFile?.name}{' '}
                         </span>
                         <span className="text-xs text-gray-400">
@@ -134,8 +143,7 @@ export function DragDropFileInfo({
                         variant={'ghost'}
                         type="button"
                         onClick={() => {
-                            setCurrentFile(null)
-                            setPreview('')
+                            handleFileChange(null)
                         }}
                     >
                         <Trash />

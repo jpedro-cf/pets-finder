@@ -1,12 +1,12 @@
-import { delay, motion, useAnimate } from 'motion/react'
-import { usePetProgress } from './petUploadProgressModel'
+import { motion } from 'motion/react'
+import { useAnimationProgress } from './progressAnimationModel'
 import { PawPrint } from 'lucide-react'
 
-interface PetAnimationProps {
-    data: ReturnType<typeof usePetProgress>
+interface ProgressAnimationProps {
+    percentage: string
 }
-export function UploadPetAnimation({ data }: PetAnimationProps) {
-    const { progress, paw } = data
+export function ProgressAnimation({ percentage }: ProgressAnimationProps) {
+    const { progress, paw } = useAnimationProgress(percentage)
 
     return (
         <motion.div

@@ -4,7 +4,11 @@ import { dragDropVariants } from '.'
 
 type Variant = VariantProps<typeof dragDropVariants>
 
-export function useDragDrop() {
+interface DragDropPros {
+    onFileSelect: (file: File | null) => void
+}
+
+export function useDragDrop({ onFileSelect }: DragDropPros) {
     const inputRef = useRef<HTMLInputElement | null>(null)
     const [currentFile, setCurrentFile] = useState<File | null>(null)
     const [currentVariant, setCurrentVariant] = useState<Variant>({
@@ -26,8 +30,8 @@ export function useDragDrop() {
         e.preventDefault()
         e.stopPropagation()
 
-        const file: File = e.dataTransfer.files[0]
-        handleFile(file)
+        const file = e.dataTransfer.files[0]
+        handleFileChange(file)
 
         setCurrentVariant({ variant: 'default' })
     }
@@ -36,21 +40,26 @@ export function useDragDrop() {
         e.preventDefault()
         const { files } = e.target
         if (files) {
-            handleFile(files[0])
+            handleFileChange(files[0])
         }
     }
 
-    function handleFile(file: File) {
-        if (!file.type.match('image.*')) {
+    function handleFileChange(file: File | null) {
+        setCurrentFile(file)
+        onFileSelect(file)
+
+        if (!file) {
+            setPreview('')
             return
         }
-        setCurrentFile(file)
 
-        const reader = new FileReader()
-        reader.onload = () => {
-            setPreview(reader.result as string)
+        if (file.type.match('image.*')) {
+            const reader = new FileReader()
+            reader.onload = () => {
+                setPreview(reader.result as string)
+            }
+            reader.readAsDataURL(file)
         }
-        reader.readAsDataURL(file)
     }
 
     return {
@@ -65,6 +74,7 @@ export function useDragDrop() {
         handleDragOver,
         currentVariant,
         setCurrentVariant,
+        handleFileChange,
     }
 }
 

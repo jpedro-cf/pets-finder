@@ -1,17 +1,32 @@
 import { create } from 'zustand'
 
-interface IDialogProps<T> {
+interface IDialog<T = any> {
+    id: string
     isOpen: boolean
     data: T | null
-    openDialog: (data: T) => void
-    closeDialog: () => void
 }
 
-export function useDialog<T>() {
-    create<IDialogProps<T>>((set) => ({
-        isOpen: false,
-        data: null,
-        openDialog: (data: T) => set({ isOpen: true, data }),
-        closeDialog: () => set({ isOpen: false, data: undefined }),
+interface IDialogStore {
+    dialogs: Record<string, IDialog>
+    open: <T>(id: string, data: T) => void
+    close: (id: string) => void
+}
+
+export function useDialogStore() {
+    create<IDialogStore>((set) => ({
+        dialogs: {},
+        open: (id, data) =>
+            set((state) => ({
+                dialogs: {
+                    ...state.dialogs,
+                    [id]: { id, isOpen: true, data },
+                },
+            })),
+        close: (id) =>
+            set((state) => {
+                const newData = { ...state.dialogs }
+                delete newData[id]
+                return { dialogs: newData }
+            }),
     }))
 }
