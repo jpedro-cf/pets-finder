@@ -4,7 +4,7 @@ import {
     DragDropFileInfo,
     DragDropImagePreview,
 } from '../DragDrop'
-import { ProgressAnimation } from '../progressAnimation'
+import { ProgressAnimation } from '../ProgressAnimation'
 import { useEffect, useState } from 'react'
 
 export function UploadPetImage() {
