@@ -18,3 +18,34 @@ services:
             paths:
                 - /similarity
             strip_path: true
+plugins:
+    - name: cors
+      enabled: true
+      protocols:
+          - grpc
+          - grpcs
+          - http
+          - https
+      config:
+          credentials: true
+          methods:
+              - GET
+              - HEAD
+              - PUT
+              - PATCH
+              - POST
+              - DELETE
+              - OPTIONS
+              - TRACE
+              - CONNECT
+          headers:
+              - Accept
+              - Accept-Version
+              - Content-Length
+              - Content-MD5
+              - Content-Type
+              - Date
+              - X-Auth-Token
+              - Access-Control-Allow-Origin
+          preflight_continue: false
+          private_network: false
