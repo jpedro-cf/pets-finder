@@ -1,3 +1,4 @@
+import { usePetsService } from '@/services/pets'
 import {
     DragDropComponent,
     DragDropContent,
@@ -5,37 +6,11 @@ import {
     DragDropImagePreview,
 } from '../DragDrop'
 import { ProgressAnimation } from '../ProgressAnimation'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useUploadPetImage } from './uploadPetImageModel'
 
 export function UploadPetImage() {
-    const [selectedFile, setSelectedFile] = useState<File | null>(null)
-    const [progress, setProgress] = useState('0%')
-
-    function handleFileSelected(file: File | null) {
-        if (!file) {
-            setProgress('0%')
-        }
-        setSelectedFile(file)
-    }
-
-    useEffect(() => {
-        if (!selectedFile) {
-            return
-        }
-        const steps = ['30%', '60%', '100%']
-        let index = 0
-        setProgress(steps[index])
-
-        const interval = setInterval(() => {
-            index++
-            if (index >= steps.length) {
-                clearInterval(interval)
-                return
-            }
-            setProgress(steps[index])
-        }, 1000)
-        return () => clearInterval(interval)
-    }, [selectedFile])
+    const { handleFileSelected, selectedFile, progress } = useUploadPetImage()
 
     return (
         <DragDropComponent onFileSelect={handleFileSelected}>

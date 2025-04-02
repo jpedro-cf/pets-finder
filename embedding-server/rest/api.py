@@ -17,8 +17,8 @@ class Api:
         self._setup_routes()
 
     def _setup_routes(self):
-        @self.app.post("/search")
-        async def search(
+        @self.app.post("/similarity")
+        async def similarity(
             text: Annotated[Optional[str], Form()],
             image: Optional[UploadFile] = None,
         ):

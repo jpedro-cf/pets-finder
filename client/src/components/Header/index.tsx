@@ -6,7 +6,7 @@ import { Dialogs } from '@/types/dialogs'
 export function Header() {
     const { openDialog } = useDialogStore()
     function handleClick() {
-        openDialog<null>(Dialogs.REGISTER, null)
+        openDialog<null>(Dialogs.LOGIN, null)
     }
     return (
         <header className="border-b-1 p-4 flex justify-between gap-3">
@@ -22,7 +22,7 @@ export function Header() {
                     </span>
                 </div>
             </div>
-            <Button onClick={handleClick}>Registrar</Button>
+            <Button onClick={handleClick}>Login</Button>
         </header>
     )
 }

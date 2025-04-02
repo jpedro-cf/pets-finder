@@ -16,54 +16,28 @@ import { useEffect } from 'react'
 import { useDialogStore } from '@/hooks/useDialog'
 import { Dialogs } from '@/types/dialogs'
 
-const registerFormSchema = z.object({
-    name: z.string().min(1),
+const loginFormSchema = z.object({
     email: z.string().min(1).email(),
-    number: z
-        .string()
-        .min(3)
-        .transform((element) => {
-            return element.replace(/\D/g, '')
-        }),
     password: z.string().min(1),
 })
-export function RegisterForm() {
-    const { registerUser, isRegistering } = useUsersService({})
-    const form = useForm<z.infer<typeof registerFormSchema>>({
-        resolver: zodResolver(registerFormSchema),
+export function LoginForm() {
+    const { authenticateUser, isAuthenticating } = useUsersService({})
+    const form = useForm<z.infer<typeof loginFormSchema>>({
+        resolver: zodResolver(loginFormSchema),
     })
     const { closeDialog, openDialog } = useDialogStore()
 
-    function handleSubmit(values: z.infer<typeof registerFormSchema>) {
-        registerUser(values, {
-            onSuccess: () => {
-                closeDialog(Dialogs.REGISTER)
-                openDialog(Dialogs.LOGIN, null)
-            },
+    function handleSubmit(values: z.infer<typeof loginFormSchema>) {
+        authenticateUser(values, {
+            onSuccess: () => closeDialog(Dialogs.LOGIN),
         })
     }
-
     return (
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(handleSubmit)}
                 className="grid grid-cols-2 gap-3"
             >
-                <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Nome:</FormLabel>
-                            <FormControl>
-                                <Input
-                                    placeholder="Digite seu nome"
-                                    {...field}
-                                />
-                            </FormControl>
-                        </FormItem>
-                    )}
-                />
                 <FormField
                     control={form.control}
                     name="email"
@@ -80,26 +54,7 @@ export function RegisterForm() {
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="number"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Celular:</FormLabel>
-                            <FormControl>
-                                <Input
-                                    placeholder="(00) 00000-0000"
-                                    {...field}
-                                    onChange={(e) => {
-                                        field.onChange(
-                                            formatPhoneNumber(e.target.value)
-                                        )
-                                    }}
-                                />
-                            </FormControl>
-                        </FormItem>
-                    )}
-                />
+
                 <FormField
                     control={form.control}
                     name="password"
@@ -116,11 +71,20 @@ export function RegisterForm() {
                         </FormItem>
                     )}
                 />
+                <div className="mt-5 col-span-2 text-gray-700">
+                    Ainda não possui uma conta?{' '}
+                    <span
+                        className="text-primary font-semibold underline cursor-pointer"
+                        onClick={() => openDialog(Dialogs.REGISTER, null)}
+                    >
+                        Registrar-se
+                    </span>
+                </div>
                 <Button
-                    disabled={isRegistering}
+                    disabled={isAuthenticating}
                     type="submit"
                     size={'lg'}
-                    className="w-full col-span-2 mt-5"
+                    className="w-full col-span-2 "
                 >
                     Enviar
                 </Button>

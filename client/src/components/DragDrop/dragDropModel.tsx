@@ -49,6 +49,7 @@ export function useDragDrop({ onFileSelect }: DragDropPros) {
         onFileSelect(file)
 
         if (!file) {
+            inputRef.current!.value = ''
             setPreview('')
             return
         }

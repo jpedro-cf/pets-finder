@@ -17,7 +17,7 @@ services:
           - name: similarity-routes
             paths:
                 - /similarity
-            strip_path: true
+            strip_path: false
 plugins:
     - name: cors
       enabled: true

@@ -10,13 +10,24 @@ export interface IListPets {
     size?: string
 }
 
+export interface ISimilarityRequest {
+    text: string
+    image?: File
+}
+
 export const PetsApi = {
     createPet: async (data: ICreatePet) => {
         return await axiosInstance.post('/pets', data)
     },
 
-    getPet: async (id: string) => {
+    getPetById: async (id: string) => {
         return await axiosInstance.get(`/pets/${id}`)
+    },
+
+    getPetsByIds: async (ids: string[]) => {
+        return await axiosInstance.get(`/pets/ids`, {
+            params: { data: ids.toString() },
+        })
     },
 
     listPets: async (data: IListPets) => {
@@ -26,5 +37,15 @@ export const PetsApi = {
                 size: data.size ? data.size : 9,
             },
         })
+    },
+
+    requestSimilarity: async (data: ISimilarityRequest) => {
+        const form = new FormData()
+        form.append('text', data.text)
+        if (data.image) {
+            form.append('image', data.image)
+        }
+
+        return await axiosInstance.post('/similarity', form)
     },
 }
