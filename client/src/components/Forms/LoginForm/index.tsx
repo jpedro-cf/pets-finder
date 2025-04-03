@@ -10,18 +10,20 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { useUsersService } from '@/services/users'
-import { formatPhoneNumber } from '@/lib/utils'
-import { useEffect } from 'react'
 import { useDialogStore } from '@/hooks/useDialog'
 import { Dialogs } from '@/types/dialogs'
+import { useMutation } from '@tanstack/react-query'
+import { UsersApi } from '@/api/users'
 
 const loginFormSchema = z.object({
     email: z.string().min(1).email(),
     password: z.string().min(1),
 })
 export function LoginForm() {
-    const { authenticateUser, isAuthenticating } = useUsersService({})
+    const { mutate: authenticateUser, isPending: isAuthenticating } =
+        useMutation({
+            mutationFn: UsersApi.login,
+        })
     const form = useForm<z.infer<typeof loginFormSchema>>({
         resolver: zodResolver(loginFormSchema),
     })

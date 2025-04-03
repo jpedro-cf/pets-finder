@@ -33,12 +33,13 @@ export const PetsApi = {
     },
 
     listPets: async (data: IListPets) => {
-        return await axiosInstance.get(`/pets`, {
+        const res = await axiosInstance.get(`/pets`, {
             params: {
                 page: data.page ? data.page : 0,
                 size: data.size ? data.size : 9,
             },
         })
+        return res.data.content
     },
 
     requestSimilarity: async (data: ISimilarityRequest) => {

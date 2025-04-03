@@ -10,11 +10,11 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { useUsersService } from '@/services/users'
 import { formatPhoneNumber } from '@/lib/utils'
-import { useEffect } from 'react'
 import { useDialogStore } from '@/hooks/useDialog'
 import { Dialogs } from '@/types/dialogs'
+import { UsersApi } from '@/api/users'
+import { useMutation } from '@tanstack/react-query'
 
 const registerFormSchema = z.object({
     name: z.string().min(1),
@@ -28,7 +28,9 @@ const registerFormSchema = z.object({
     password: z.string().min(1),
 })
 export function RegisterForm() {
-    const { registerUser, isRegistering } = useUsersService({})
+    const { mutate: registerUser, isPending: isRegistering } = useMutation({
+        mutationFn: UsersApi.register,
+    })
     const form = useForm<z.infer<typeof registerFormSchema>>({
         resolver: zodResolver(registerFormSchema),
     })

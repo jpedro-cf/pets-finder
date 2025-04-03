@@ -1,10 +1,11 @@
-import { usePetsService } from '@/services/pets'
+import { PetsApi } from '@/api/pets'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 
 export function useUploadPetImage() {
+    const client = useQueryClient()
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
     const [progress, setProgress] = useState('0%')
-    const { requestImageSimilarity, fetchSimilarPets } = usePetsService()
 
     function handleFileSelected(file: File | null) {
         setSelectedFile(file)
@@ -25,6 +26,18 @@ export function useUploadPetImage() {
             },
         })
     }
+
+    const { mutate: fetchSimilarPets } = useMutation({
+        mutationFn: PetsApi.getPetsByIds,
+        onSuccess: (data) => {
+            client.setQueryData(['pets'], data)
+        },
+    })
+
+    const { mutate: requestImageSimilarity } = useMutation({
+        mutationFn: PetsApi.requestSimilarity,
+    })
+
     return {
         selectedFile,
         progress,

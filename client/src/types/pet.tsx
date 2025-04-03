@@ -1,4 +1,4 @@
-interface IPet {
+export interface IPet {
     id: string
     description: string
     image: string
@@ -10,7 +10,7 @@ interface IPet {
     date: Date
 }
 
-interface ISimilarPet {
+export interface ISimilarPet {
     id: string
     image: string
     location: string
