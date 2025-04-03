@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 export function useUploadPetImage() {
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
-    const [progress, setProgress] = useState('33%')
+    const [progress, setProgress] = useState('0%')
     const { requestImageSimilarity, fetchSimilarPets } = usePetsService()
 
     function handleFileSelected(file: File | null) {
@@ -12,17 +12,19 @@ export function useUploadPetImage() {
             setProgress('0%')
             return
         }
-        requestImageSimilarity(
-            { text: 'request', image: file },
-            {
-                onSuccess: (res) => {
-                    fetchSimilarPets(res.data.ids)
-                    setProgress('66%')
-                },
-            }
-        )
-    }
+        setProgress('33%')
 
+        const data = { text: 'request', image: file }
+        requestImageSimilarity(data, {
+            onSuccess: (data) => {
+                setProgress('66%')
+
+                fetchSimilarPets(data.ids, {
+                    onSuccess: () => setProgress('100%'),
+                })
+            },
+        })
+    }
     return {
         selectedFile,
         progress,

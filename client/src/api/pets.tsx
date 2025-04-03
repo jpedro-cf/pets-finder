@@ -25,9 +25,11 @@ export const PetsApi = {
     },
 
     getPetsByIds: async (ids: string[]) => {
-        return await axiosInstance.get(`/pets/ids`, {
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+        const res = await axiosInstance.get(`/pets/ids`, {
             params: { data: ids.toString() },
         })
+        return res.data
     },
 
     listPets: async (data: IListPets) => {
@@ -40,12 +42,14 @@ export const PetsApi = {
     },
 
     requestSimilarity: async (data: ISimilarityRequest) => {
+        await new Promise((resolve) => setTimeout(resolve, 1000))
         const form = new FormData()
         form.append('text', data.text)
         if (data.image) {
             form.append('image', data.image)
         }
 
-        return await axiosInstance.post('/similarity', form)
+        const res = await axiosInstance.post('/similarity', form)
+        return res.data
     },
 }

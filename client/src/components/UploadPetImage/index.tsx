@@ -1,4 +1,3 @@
-import { usePetsService } from '@/services/pets'
 import {
     DragDropComponent,
     DragDropContent,
@@ -6,7 +5,6 @@ import {
     DragDropImagePreview,
 } from '../DragDrop'
 import { ProgressAnimation } from '../ProgressAnimation'
-import { useState } from 'react'
 import { useUploadPetImage } from './uploadPetImageModel'
 
 export function UploadPetImage() {

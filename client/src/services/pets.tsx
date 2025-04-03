@@ -1,14 +1,16 @@
 import { PetsApi } from '@/api/pets'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
 
 export function usePetsService() {
-    const [ids, setIds] = useState<string[] | null>(null)
     const [id, setId] = useState<string | null>(null)
+    const client = useQueryClient()
 
     const { mutate: createPet, isPending: isCreatingPet } = useMutation({
         mutationFn: PetsApi.createPet,
+        onSuccess: () => {
+            client.invalidateQueries({ queryKey: ['pets'] })
+        },
     })
 
     const {
@@ -18,31 +20,24 @@ export function usePetsService() {
     } = useQuery({
         queryKey: ['pet', id],
         queryFn: () => PetsApi.getPetById(id!),
-        enabled: id != null,
+        enabled: !!id,
     })
     async function fetchPet(data: string) {
         setId(data)
         await refetchPet()
     }
 
-    const {
-        data: similarPets,
-        isSuccess: similarPetsSuccess,
-        isLoading: similarPetsLoading,
-        refetch: refetchSimilarPets,
-    } = useQuery({
-        queryKey: ['pets', ids],
-        queryFn: () => PetsApi.getPetsByIds(ids!),
-        enabled: ids != null,
-    })
-    async function fetchSimilarPets(ids: string[]) {
-        setIds(ids)
-        await refetchSimilarPets()
-    }
+    const { mutate: fetchSimilarPets, isPending: similarPetsLoading } =
+        useMutation({
+            mutationFn: PetsApi.getPetsByIds,
+            onSuccess: () => {
+                client.invalidateQueries({ queryKey: ['pets'] })
+            },
+        })
 
     const {
         data: petsList,
-        isLoading: listPetsLoading,
+        isLoading: petsListLoading,
         refetch: fetchPets,
     } = useQuery({
         queryKey: ['pets'],
@@ -54,10 +49,12 @@ export function usePetsService() {
         enabled: false,
     })
 
-    const { mutate: requestImageSimilarity, isPending: similarityLoading } =
-        useMutation({
-            mutationFn: PetsApi.requestSimilarity,
-        })
+    const {
+        mutate: requestImageSimilarity,
+        isPending: similarityRequestLoading,
+    } = useMutation({
+        mutationFn: PetsApi.requestSimilarity,
+    })
 
     return {
         createPet,
@@ -66,13 +63,11 @@ export function usePetsService() {
         petLoading,
         petsList,
         fetchPets,
-        listPetsLoading,
+        petsListLoading,
         requestImageSimilarity,
-        similarityLoading,
-        similarPets,
-        similarPetsSuccess,
-        fetchSimilarPets,
+        similarityRequestLoading,
         fetchPet,
+        fetchSimilarPets,
         similarPetsLoading,
     }
 }
