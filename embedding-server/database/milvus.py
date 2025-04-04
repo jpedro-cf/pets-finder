@@ -112,11 +112,15 @@ class MilvusDatabase(VectorDatabase):
         return None
 
     def delete(self, id):
-        res = self.collection.delete(
-            expr=f'id == "{id}"',
-            using=self.conn,
-        )
-        return res[0] if res else None
+        try:
+            res = self.collection.delete(
+                expr=f'id == "{id}"',
+                using=self.conn,
+            )
+            return res[0] if res else None
+        except Exception as e:
+            print(e)
+            return None
 
     def close(self):
         connections.disconnect(alias=self.conn)

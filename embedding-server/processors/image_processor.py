@@ -11,6 +11,7 @@ class ImageProcessor:
 
     def describe_image(self, image_bytes: BytesIO) -> str:
         try:
+            # return "Descrição gerada por I.A"
             img = Image.open(image_bytes)
             response = self.client.models.generate_content(
                 model="gemini-2.0-flash",

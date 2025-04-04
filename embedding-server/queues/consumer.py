@@ -26,7 +26,7 @@ class QueueConsumer:
 
     def listen(self):
         self.connection = pika.BlockingConnection(
-            pika.ConnectionParameters("localhost")
+            pika.ConnectionParameters("localhost", heartbeat=60)
         )
         self.channel = self.connection.channel()
 
@@ -66,8 +66,6 @@ class QueueConsumer:
             metadata = {"id": pet_id, "type": pet_type}
             neighbours = self.db.search(vector, 4, metadata)
 
-            ch.basic_ack(delivery_tag=method.delivery_tag)
-
             self.producer.produce_pet_processed(
                 {
                     "id": pet_id,
@@ -77,6 +75,7 @@ class QueueConsumer:
                 }
             )
 
+            ch.basic_ack(delivery_tag=method.delivery_tag)
             print(f"Item {pet_id} processed!")
         except Exception as e:
             self.producer.produce_pet_error(
