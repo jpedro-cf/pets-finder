@@ -4,7 +4,6 @@ export interface IPet {
     image: string
     location: string
     type: string
-    color: string
     contact_info: string
     similar: ISimilarPet[]
     date: Date

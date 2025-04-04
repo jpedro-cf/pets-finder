@@ -14,96 +14,100 @@ import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import { useDialogStore } from '@/hooks/useDialog'
 import { Dialogs } from '@/types/dialogs'
+import React, { createContext, useContext } from 'react'
+import { cn } from '@/lib/utils'
 
-interface Props {
-    pet: IPet
+type PetData = Omit<IPet, 'similar' | 'description' | 'contact_info'>
+interface IPetCardProps extends React.ComponentProps<'div'> {
+    pet: PetData
 }
 
-export function PetsCard({ pet }: Props) {
-    const { openDialog } = useDialogStore()
-
+export function PetsCard({
+    pet,
+    children,
+    className,
+    ...props
+}: IPetCardProps) {
     return (
-        <Card className="p-0">
-            <CardContent className="p-0">
-                <div
-                    className="overflow-hidden rounded-md rounded-b-none h-[150px] cursor-pointer"
-                    onClick={() =>
-                        openDialog(Dialogs.PET_DETAILS, { id: pet.id })
-                    }
-                >
-                    <img
-                        src="#"
-                        alt="Dog image"
-                        className="object-cover w-full h-full"
-                    />
-                </div>
-                <div className="p-4">
-                    <div className="flex items-start justify-between gap-2">
-                        <span className="flex items-center gap-1 font-bold text-gray-700">
-                            <MapPinned size={18} />
-                            {pet.location}
-                        </span>
-                        <Badge className="py-1.5 px-2" variant={'outline'}>
-                            <PetTypesIcon type={pet.type} size={14} />
-                        </Badge>
-                    </div>
-                    <span className="flex items-center gap-1 text-xs text-primary font-semibold">
-                        <Calendar size={18} />
-                        {format(pet.date, 'd LLLL y', { locale: ptBR })}
-                    </span>
-                    <Button
-                        size={'sm'}
-                        className="mt-3"
-                        onClick={() =>
-                            openDialog(Dialogs.PET_DETAILS, { id: pet.id })
-                        }
-                    >
-                        Ver Detalhes <PetTypesIcon type={pet.type} size={14} />
-                    </Button>
-                </div>
-            </CardContent>
-        </Card>
+        <PetCardContext.Provider value={{ ...pet }}>
+            <Card className="p-0">
+                <CardContent className={`p-0 ${className}`}>
+                    {children}
+                </CardContent>
+            </Card>
+        </PetCardContext.Provider>
     )
 }
 
-interface SimilarProps {
-    pet: ISimilarPet
-}
-export function SimilarPetCard({ pet }: SimilarProps) {
+export function PetCardImage({
+    className,
+    ...props
+}: React.ComponentProps<'div'>) {
+    const pet = usePetCardContext()
     const { openDialog } = useDialogStore()
     return (
-        <Card className="p-0">
-            <CardContent className="p-0">
-                <div
-                    className="overflow-hidden rounded-md rounded-b-none h-[120px] cursor-pointer"
-                    onClick={() =>
-                        openDialog(Dialogs.PET_DETAILS, { id: pet.id })
-                    }
-                >
-                    <img
-                        src="#"
-                        alt="Dog image"
-                        className="object-cover w-full h-full"
-                    />
-                </div>
-                <div className="p-4">
-                    <div className="flex items-start justify-between gap-2">
-                        <span className="flex items-center gap-1 font-bold text-gray-700">
-                            <MapPinned size={12} />
-                            {pet.location}
-                        </span>
-                    </div>
-                    <span className="flex items-center gap-1 text-xs text-primary font-semibold">
-                        <Calendar size={12} />
-                        {format(pet.date, 'd LLLL y', { locale: ptBR })}
-                    </span>
-                </div>
-            </CardContent>
-        </Card>
+        <div
+            className={cn(
+                'overflow-hidden rounded-md rounded-b-none h-[150px] cursor-pointer',
+                className
+            )}
+            onClick={() => openDialog(Dialogs.PET_DETAILS, { id: pet.id })}
+        >
+            <img
+                src="#"
+                alt="Dog image"
+                className="object-cover w-full h-full"
+            />
+        </div>
     )
 }
 
-export function PetTypesIcon({ type, size }: { type: string; size?: number }) {
+export function PetCardContent({
+    children,
+    ...props
+}: React.ComponentProps<'div'>) {
+    const pet = usePetCardContext()
+
+    return (
+        <div className="p-4">
+            <div className="flex items-start justify-between gap-2 text-sm font-bold text-gray-700">
+                <span className="flex items-center gap-1">
+                    <MapPinned className="w-[1.2em]" />
+                    {pet.location}
+                </span>
+                {pet.type && (
+                    <Badge className="py-1.5 px-2" variant={'outline'}>
+                        <PetTypeIcon type={pet.type} size={14} />
+                    </Badge>
+                )}
+            </div>
+            <span className="flex items-center gap-1 text-xs text-primary font-semibold">
+                <Calendar className="w-[1.2em]" />
+                {format(pet.date, 'd LLLL y', { locale: ptBR })}
+            </span>
+            {children}
+        </div>
+    )
+}
+export function PetCardActions({
+    className,
+    ...props
+}: React.ComponentProps<'button'>) {
+    const { openDialog } = useDialogStore()
+    const pet = usePetCardContext()
+    return (
+        <Button
+            {...props}
+            size={'sm'}
+            className={cn('mt-3', className)}
+            onClick={() => openDialog(Dialogs.PET_DETAILS, { id: pet.id })}
+        >
+            Ver Detalhes <PetTypeIcon type={pet.type} size={14} />
+        </Button>
+    )
+}
+
+export function PetTypeIcon({ type, size }: { type: string; size?: number }) {
     const types: Record<string, React.ReactElement> = {
         DOG: <Bone size={size ?? 16} />,
         CAT: <Cat size={size ?? 16} />,
@@ -111,4 +115,13 @@ export function PetTypesIcon({ type, size }: { type: string; size?: number }) {
     }
 
     return <div>{types[type] ?? types['DEFAULT']}</div>
+}
+
+const PetCardContext = createContext<PetData | null>(null)
+function usePetCardContext() {
+    const context = useContext(PetCardContext)
+    if (!context) {
+        throw new Error('Pet context must be used within a card')
+    }
+    return context
 }

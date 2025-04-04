@@ -1,15 +1,14 @@
 import { IDialog, useDialogStore } from '@/hooks/useDialog'
 import { Dialogs } from '@/types/dialogs'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
-import { IPet } from '@/types/pet'
 import { formatPhoneNumber } from '@/lib/utils'
 import { useQuery } from '@tanstack/react-query'
 import { PetsApi } from '@/api/pets'
-import { Bone, Calendar, FileText, MapPinned, Phone } from 'lucide-react'
+import { Calendar, FileText, MapPinned, Phone } from 'lucide-react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { PetsCard, SimilarPetCard } from '../PetsCard'
 import { useEffect } from 'react'
+import { PetCardContent, PetCardImage, PetsCard } from '../PetsCard'
 
 export function PetDialog() {
     const { dialogs, closeDialog } = useDialogStore()
@@ -96,7 +95,12 @@ export function PetDialog() {
                                     </span>
                                     <div className="grid grid-cols-4 gap-2">
                                         {pet.similar.map((similar) => (
-                                            <SimilarPetCard pet={similar} />
+                                            <PetsCard
+                                                pet={{ type: '', ...similar }}
+                                            >
+                                                <PetCardImage />
+                                                <PetCardContent />
+                                            </PetsCard>
                                         ))}
                                     </div>
                                 </>

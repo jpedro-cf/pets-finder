@@ -1,5 +1,10 @@
 import { IPet } from '@/types/pet'
-import { PetsCard } from '../PetsCard'
+import {
+    PetCardActions,
+    PetCardContent,
+    PetCardImage,
+    PetsCard,
+} from '../PetsCard'
 import { usePetsList } from './petsListModel'
 
 export function PetsList() {
@@ -9,8 +14,13 @@ export function PetsList() {
     return (
         <div className="grid grid-cols-3 gap-3">
             {!petsListLoading &&
-                (pets as IPet[]).map((pet) => (
-                    <PetsCard key={pet.id} pet={pet} />
+                pets.map((pet) => (
+                    <PetsCard key={pet.id} pet={pet}>
+                        <PetCardImage />
+                        <PetCardContent>
+                            <PetCardActions />
+                        </PetCardContent>
+                    </PetsCard>
                 ))}
         </div>
     )
