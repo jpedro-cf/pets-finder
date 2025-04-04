@@ -9,7 +9,9 @@ export function PetsList() {
     return (
         <div className="grid grid-cols-3 gap-3">
             {!petsListLoading &&
-                (pets as IPet[]).map((pet) => <PetsCard pet={pet} />)}
+                (pets as IPet[]).map((pet) => (
+                    <PetsCard key={pet.id} pet={pet} />
+                ))}
         </div>
     )
 }

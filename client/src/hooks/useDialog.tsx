@@ -1,14 +1,23 @@
+import { Dialogs } from '@/types/dialogs'
+import { IPet } from '@/types/pet'
 import { create } from 'zustand'
 
-interface IDialog<T = any> {
+export interface IDialog<T = any> {
     id: string
     isOpen: boolean
-    data: T | null
+    data: T
+}
+
+interface Types {
+    [Dialogs.CREATE_PET]: null
+    [Dialogs.LOGIN]: null
+    [Dialogs.REGISTER]: null
+    [Dialogs.PET_DETAILS]: { id: string }
 }
 
 interface IDialogStore {
     dialogs: Record<string, IDialog>
-    openDialog: <T>(id: string, data: T) => void
+    openDialog: <T extends keyof Types>(id: T, data: Types[T]) => void
     closeDialog: (id: string) => void
 }
 

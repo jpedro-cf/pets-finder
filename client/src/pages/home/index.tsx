@@ -1,4 +1,5 @@
 import { LoginDialog } from '@/components/Dialogs/LoginDialog'
+import { PetDialog } from '@/components/Dialogs/PetDialog'
 import { RegisterDialog } from '@/components/Dialogs/RegisterDialog'
 import { Header } from '@/components/Header'
 import { PetsList } from '@/components/PetsList'
@@ -22,6 +23,7 @@ export function Home() {
             </div>
             <RegisterDialog />
             <LoginDialog />
+            <PetDialog />
         </>
     )
 }

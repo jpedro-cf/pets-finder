@@ -1,4 +1,5 @@
 import { axiosInstance } from '@/config/axios'
+import { IPet } from '@/types/pet'
 
 export interface ICreatePet {
     color: string
@@ -20,8 +21,9 @@ export const PetsApi = {
         return await axiosInstance.post('/pets', data)
     },
 
-    getPetById: async (id: string) => {
-        return await axiosInstance.get(`/pets/${id}`)
+    getPetById: async (id: string): Promise<IPet> => {
+        const res = await axiosInstance.get(`/pets/${id}`)
+        return res.data
     },
 
     getPetsByIds: async (ids: string[]) => {
