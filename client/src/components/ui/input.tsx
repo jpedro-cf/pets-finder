@@ -17,4 +17,26 @@ function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
         />
     )
 }
-export { Input }
+
+interface ContainerProps extends React.ComponentProps<'div'> {
+    inputProps?: React.InputHTMLAttributes<HTMLInputElement>
+}
+function InputContainer({
+    onChange,
+    className,
+    children,
+    inputProps,
+    ...props
+}: ContainerProps) {
+    return (
+        <div
+            className={cn('border-1 rounded-md relative', className)}
+            {...props}
+        >
+            <Input {...inputProps} className="border-0" />
+            {children}
+        </div>
+    )
+}
+
+export { Input, InputContainer }

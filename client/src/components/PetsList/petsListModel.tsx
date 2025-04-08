@@ -3,8 +3,8 @@ import { useQuery } from '@tanstack/react-query'
 
 export function usePetsList() {
     const {
-        data: petsList,
-        isLoading: petsListLoading,
+        data: petsListData,
+        isFetching: petsListLoading,
         refetch: refetchPets,
     } = useQuery({
         queryKey: ['pets'],
@@ -13,7 +13,13 @@ export function usePetsList() {
                 page: '0',
                 size: '9',
             }),
+        retry: 2,
+        refetchOnWindowFocus: false,
     })
 
-    return { petsList, petsListLoading, refetchPets }
+    return {
+        petsListData,
+        petsListLoading,
+        refetchPets,
+    }
 }

@@ -16,9 +16,19 @@ export interface ISimilarityRequest {
     image?: File
 }
 
+interface ListPetsResult {
+    pets: IPet[]
+    totalPages: number
+}
+
+interface SimilarityResult {
+    ids: string[]
+}
+
 export const PetsApi = {
-    createPet: async (data: ICreatePet) => {
-        return await axiosInstance.post('/pets', data)
+    createPet: async (data: ICreatePet): Promise<IPet> => {
+        const res = await axiosInstance.post('/pets', data)
+        return res.data
     },
 
     getPetById: async (id: string): Promise<IPet> => {
@@ -26,7 +36,7 @@ export const PetsApi = {
         return res.data
     },
 
-    getPetsByIds: async (ids: string[]) => {
+    getPetsByIds: async (ids: string[]): Promise<IPet[]> => {
         await new Promise((resolve) => setTimeout(resolve, 1000))
         const res = await axiosInstance.get(`/pets/ids`, {
             params: { data: ids.toString() },
@@ -34,17 +44,22 @@ export const PetsApi = {
         return res.data
     },
 
-    listPets: async (data: IListPets) => {
+    listPets: async (data: IListPets): Promise<ListPetsResult> => {
         const res = await axiosInstance.get(`/pets`, {
             params: {
                 page: data.page ? data.page : 0,
                 size: data.size ? data.size : 9,
             },
         })
-        return res.data.content
+        return {
+            pets: res.data.content,
+            totalPages: res.data.totalPages,
+        }
     },
 
-    requestSimilarity: async (data: ISimilarityRequest) => {
+    requestSimilarity: async (
+        data: ISimilarityRequest
+    ): Promise<SimilarityResult> => {
         await new Promise((resolve) => setTimeout(resolve, 1000))
         const form = new FormData()
         form.append('text', data.text)
