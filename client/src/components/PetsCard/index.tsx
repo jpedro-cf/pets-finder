@@ -30,7 +30,7 @@ export function PetsCard({
 }: IPetCardProps) {
     return (
         <PetCardContext.Provider value={{ ...pet }}>
-            <Card className="p-0">
+            <Card className={cn('p-0', className)} {...props}>
                 <CardContent className={`p-0 ${className}`}>
                     {children}
                 </CardContent>
@@ -45,6 +45,7 @@ export function PetCardImage({
 }: React.ComponentProps<'div'>) {
     const pet = usePetCardContext()
     const { openDialog } = useDialogStore()
+
     return (
         <div
             className={cn(
@@ -52,6 +53,7 @@ export function PetCardImage({
                 className
             )}
             onClick={() => openDialog(Dialogs.PET_DETAILS, { id: pet.id })}
+            {...props}
         >
             <img
                 src="#"
@@ -64,12 +66,13 @@ export function PetCardImage({
 
 export function PetCardContent({
     children,
+    className,
     ...props
 }: React.ComponentProps<'div'>) {
     const pet = usePetCardContext()
 
     return (
-        <div className="p-4">
+        <div className={cn('p-4', className)} {...props}>
             <div className="flex items-start justify-between gap-2 text-sm font-bold text-gray-700">
                 <span className="flex items-center gap-1">
                     <MapPinned className="w-[1.2em]" />
@@ -97,10 +100,10 @@ export function PetCardActions({
     const pet = usePetCardContext()
     return (
         <Button
-            {...props}
             size={'sm'}
             className={cn('mt-3', className)}
             onClick={() => openDialog(Dialogs.PET_DETAILS, { id: pet.id })}
+            {...props}
         >
             Ver Detalhes <PetTypeIcon type={pet.type} size={14} />
         </Button>

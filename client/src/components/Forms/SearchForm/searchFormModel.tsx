@@ -18,10 +18,10 @@ export function useSearch() {
     const { mutate: fetchSimilar, isPending: fetching } = useMutation({
         mutationFn: PetsApi.getPetsByIds,
         onSuccess: (data) => {
-            console.log(data)
             client.setQueryData(['pets'], {
                 pets: data,
                 totalPages: 1,
+                loading: false,
             })
         },
     })
@@ -30,6 +30,12 @@ export function useSearch() {
         resolver: zodResolver(searchSchema),
     })
     function handleSearch(values: z.infer<typeof searchSchema>) {
+        client.setQueryData(['pets'], (old: any) => {
+            return {
+                ...old,
+                loading: true,
+            }
+        })
         requestSimilarity(values)
     }
 

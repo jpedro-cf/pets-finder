@@ -17,9 +17,9 @@ export function SearchForm(data: Props) {
                         <FormItem className="border-1 rounded-md p-0.5 ps-3 relative flex items-center">
                             <FormControl className="p-0">
                                 <Input
-                                    {...field}
                                     placeholder="Pesquisar..."
                                     className="border-0 p-0 aria-invalid:ring-0"
+                                    {...field}
                                 />
                             </FormControl>
                             <Button

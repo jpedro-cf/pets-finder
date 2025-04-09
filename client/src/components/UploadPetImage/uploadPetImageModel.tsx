@@ -19,7 +19,7 @@ export function useUploadPetImage() {
         requestImageSimilarity(data)
     }
 
-    const { mutate: fetchSimilarPets } = useMutation({
+    const { mutate: fetchSimilarPets, isPending: idsPending } = useMutation({
         mutationFn: PetsApi.getPetsByIds,
         onSuccess: (data) => {
             setProgress('100%')
@@ -27,17 +27,21 @@ export function useUploadPetImage() {
         },
     })
 
-    const { mutate: requestImageSimilarity } = useMutation({
-        mutationFn: PetsApi.requestSimilarity,
-        onSuccess: (data) => {
-            setProgress('66%')
-            fetchSimilarPets(data.ids)
-        },
-    })
+    const { mutate: requestImageSimilarity, isPending: similarityPending } =
+        useMutation({
+            mutationFn: PetsApi.requestSimilarity,
+            onSuccess: (data) => {
+                setProgress('66%')
+                fetchSimilarPets(data.ids)
+            },
+        })
+
+    const requesting = idsPending || similarityPending
 
     return {
         selectedFile,
         progress,
         handleFileSelected,
+        requesting,
     }
 }

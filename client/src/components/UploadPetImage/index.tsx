@@ -7,8 +7,9 @@ import {
 import { ProgressAnimation } from '../ProgressAnimation'
 import { useUploadPetImage } from './uploadPetImageModel'
 
-export function UploadPetImage() {
-    const { handleFileSelected, selectedFile, progress } = useUploadPetImage()
+type Props = ReturnType<typeof useUploadPetImage>
+export function UploadPetImage(data: Props) {
+    const { handleFileSelected, selectedFile, progress } = data
 
     return (
         <DragDropComponent onFileSelect={handleFileSelected}>
