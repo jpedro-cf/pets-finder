@@ -19,7 +19,9 @@ export function PetsList({ loading }: Props) {
         <div className={`max-h-full overflow-y-auto pe-2 ${scrollBar}`}>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
                 {loading || petsListLoading
-                    ? Array.from([1, 2, 3]).map((_, i) => <PetsCardSkeleton />)
+                    ? Array.from([1, 2, 3]).map((_, i) => (
+                          <PetsCardSkeleton key={i} />
+                      ))
                     : petsListData?.pets?.map((pet) => (
                           <PetsCard key={pet.id} pet={pet}>
                               <PetCardImage />

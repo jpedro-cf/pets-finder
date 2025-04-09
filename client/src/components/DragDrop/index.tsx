@@ -72,12 +72,15 @@ export function DragDropComponent({
     )
 }
 
-export function DragDropContent({ ...props }: React.ComponentProps<'div'>) {
+export function DragDropContent({
+    className,
+    ...props
+}: React.ComponentProps<'div'>) {
     const { data } = useDragDropContext()
     const { preview, inputRef, currentFile } = data
     return (
         <div
-            className="flex flex-col gap-3 items-center"
+            className={cn('flex flex-col gap-3 items-center', className)}
             {...props}
             hidden={currentFile != null}
         >

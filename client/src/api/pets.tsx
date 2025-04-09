@@ -3,7 +3,9 @@ import { IPet } from '@/types/pet'
 
 export interface ICreatePet {
     color: string
+    type: string
     location: string
+    image: File
 }
 
 export interface IListPets {
