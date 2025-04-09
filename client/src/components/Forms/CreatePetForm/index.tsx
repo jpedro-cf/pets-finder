@@ -22,12 +22,8 @@ import {
     DragDropFileInfo,
     DragDropImagePreview,
 } from '@/components/DragDrop'
-import { useEffect } from 'react'
 export function CreatePetForm() {
     const { form, isPending, handleSubmit, handleFileSelect } = useCreatePet()
-    useEffect(() => {
-        console.log(form.getValues())
-    }, [form])
     return (
         <Form {...form}>
             <form
@@ -37,10 +33,12 @@ export function CreatePetForm() {
                 <FormField
                     control={form.control}
                     name="image"
-                    render={({ field }) => (
+                    render={({ fieldState }) => (
                         <DragDropComponent
                             onFileSelect={handleFileSelect}
-                            className={`w-1/2 h-[350px]`}
+                            className={`w-1/2 h-[350px] ${
+                                fieldState.error && 'bg-red-50 border-red-400'
+                            }`}
                         >
                             <DragDropContent />
                             <DragDropImagePreview />
@@ -48,7 +46,7 @@ export function CreatePetForm() {
                         </DragDropComponent>
                     )}
                 />
-                <div className="grid grid-cols-2 gap-4 h-full auto-rows-max">
+                <div className="grid grid-cols-2 gap-4 items-start h-full auto-rows-max">
                     <FormField
                         control={form.control}
                         name="color"

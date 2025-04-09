@@ -1,8 +1,9 @@
 import { PetsApi } from '@/api/pets'
+import { useFormField } from '@/components/ui/form'
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
-import { useForm } from 'react-hook-form'
+import { useController, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 const petFormSchema = z.object({
@@ -11,7 +12,9 @@ const petFormSchema = z.object({
         errorMap: () => ({ message: 'Selecione um tipo válido' }),
     }),
     location: z.string().min(1, 'Informe a localização'),
-    image: z.custom<File>().refine((file) => file != null, 'Envie uma imagem'),
+    image: z
+        .custom<File>()
+        .refine((file) => file?.size > 0, 'Envie uma imagem'),
 })
 export function useCreatePet() {
     const form = useForm<z.infer<typeof petFormSchema>>({
@@ -23,12 +26,12 @@ export function useCreatePet() {
             image: undefined,
         },
     })
+
+    const { field } = useController({ name: 'image', control: form.control })
     function handleFileSelect(data: File | null) {
-        if (!data) {
-            return
-        }
-        form.setValue('image', data)
+        field.onChange(data)
     }
+
     const { mutate: createPet, isPending } = useMutation({
         mutationFn: PetsApi.createPet,
     })
