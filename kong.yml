@@ -46,6 +46,7 @@ plugins:
               - Content-Type
               - Date
               - X-Auth-Token
+              - Authorization
               - Access-Control-Allow-Origin
           preflight_continue: false
           private_network: false
