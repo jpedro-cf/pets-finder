@@ -14,15 +14,20 @@ import { useDialogStore } from '@/hooks/useDialog'
 import { Dialogs } from '@/types/dialogs'
 import { useMutation } from '@tanstack/react-query'
 import { UsersApi } from '@/api/users'
+import { useAuth } from '@/hooks/useAuth'
 
 const loginFormSchema = z.object({
     email: z.string().min(1).email(),
     password: z.string().min(1),
 })
 export function LoginForm() {
+    const { setToken } = useAuth()
     const { mutate: authenticateUser, isPending: isAuthenticating } =
         useMutation({
             mutationFn: UsersApi.login,
+            onSuccess: (data) => {
+                setToken(data.access_token)
+            },
         })
     const form = useForm<z.infer<typeof loginFormSchema>>({
         resolver: zodResolver(loginFormSchema),
