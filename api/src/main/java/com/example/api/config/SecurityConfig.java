@@ -52,6 +52,7 @@ public class SecurityConfig{
                 .authorizeHttpRequests(authorize -> authorize.
                         requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/auth/refresh").permitAll()
                         .requestMatchers(HttpMethod.GET, "/pets").permitAll()
                         .requestMatchers(HttpMethod.GET, "/pets/ids").permitAll()
                         .requestMatchers(HttpMethod.GET, "/pets/{id}").permitAll()
