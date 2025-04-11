@@ -1,5 +1,7 @@
 package com.example.api.users.controllers;
 
+import com.example.api.data.exceptions.InvalidArgumentException;
+import com.example.api.data.exceptions.UnauthorizedException;
 import com.example.api.users.dto.LoginRequestDTO;
 import com.example.api.users.dto.LoginResponseDTO;
 import com.example.api.users.dto.RefreshTokenResponseDTO;
@@ -18,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("auth")
@@ -55,9 +59,17 @@ public class AuthController {
     }
 
     @GetMapping("refresh")
-    public ResponseEntity<RefreshTokenResponseDTO> refresh(@CookieValue("refresh_token") String cookie){
-        String newAccessToken = authService.refreshToken(cookie);
-        return ResponseEntity.ok(new RefreshTokenResponseDTO(newAccessToken));
+    public ResponseEntity<RefreshTokenResponseDTO> refresh(@CookieValue("refresh_token") Optional<String> cookie) {
+        try {
+            if (cookie.isEmpty()) {
+                throw new UnauthorizedException("REFRESH_TOKEN_ERROR");
+            }
+            String newAccessToken = authService.refreshToken(cookie.get());
+            return ResponseEntity.ok(new RefreshTokenResponseDTO(newAccessToken));
+
+        } catch (Exception e) {
+            throw new InvalidArgumentException("REFRESH_TOKEN_ERROR");
+        }
     }
 
 }

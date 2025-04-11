@@ -37,12 +37,11 @@ public class SecurityFilter extends OncePerRequestFilter {
             // The user_id was set in the subject
             var login = decoder.decode(token);
 
-            Optional<UserEntity> user = usersRepository.findById(UUID.fromString(login.getSubject()));
-            if(user.isEmpty()){
-                throw new UnauthorizedException("Token inválido.");
-            }
+            UserEntity user = usersRepository.findById(UUID.fromString(login.getSubject()))
+                    .orElseThrow(() -> new UnauthorizedException("Token inválido."));
 
-            var authentication = new UsernamePasswordAuthenticationToken(user, null, user.get().getAuthorities());
+
+            var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 

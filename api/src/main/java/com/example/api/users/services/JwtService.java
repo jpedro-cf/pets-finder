@@ -22,7 +22,7 @@ public class JwtService {
                 .issuer("pet-finder-api")
                 .issuedAt(now)
                 .expiresAt(now.plus(5, ChronoUnit.MINUTES))
-                .subject(user.getName())
+                .subject(user.getId().toString())
                 .claim("scope", user.getAuthorities().toString())
                 .build();
 
@@ -36,7 +36,7 @@ public class JwtService {
                 .issuer("pet-finder-api")
                 .issuedAt(now)
                 .expiresAt(now.plus(30, ChronoUnit.DAYS))
-                .subject(user.getName())
+                .subject(user.getId().toString())
                 .claim("scope", user.getAuthorities().toString())
                 .build();
 

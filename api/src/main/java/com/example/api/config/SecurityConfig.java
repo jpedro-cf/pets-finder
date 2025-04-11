@@ -90,7 +90,7 @@ public class SecurityConfig{
 
         configuration.setAllowedOrigins(List.of(corsUrls.split(",")));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Access-Control-Allow-Origin", "Accept", "Access-Control-Request-Method"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Access-Control-Allow-Origin", "Accept", "Access-Control-Allow-Headers", "Access-Control-Request-Method"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

@@ -1,4 +1,6 @@
 package com.example.api.users.dto;
 
-public record RefreshTokenResponseDTO(String accessToken) {
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record RefreshTokenResponseDTO(@JsonProperty("access_token") String accessToken) {
 }
