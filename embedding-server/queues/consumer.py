@@ -25,25 +25,28 @@ class QueueConsumer:
         self.image_processor = image_processor
 
     def listen(self):
-        self.connection = pika.BlockingConnection(
-            pika.ConnectionParameters("localhost", heartbeat=60)
-        )
-        self.channel = self.connection.channel()
+        try:
+            self.connection = pika.BlockingConnection(
+                pika.ConnectionParameters("localhost", heartbeat=30, port=5672)
+            )
+            self.channel = self.connection.channel()
 
-        self._setup_channel()
+            self._setup_channel()
 
-        self.channel.basic_consume(
-            queue=config["PET_CREATED_QUEUE"],
-            on_message_callback=self.process_pet_created,
-            auto_ack=False,
-        )
-        self.channel.basic_consume(
-            queue=config["PET_REFRESH_QUEUE"],
-            on_message_callback=self.process_refresh,
-            auto_ack=False,
-        )
-        print("Consumer ready..")
-        self.channel.start_consuming()
+            self.channel.basic_consume(
+                queue=config["PET_CREATED_QUEUE"],
+                on_message_callback=self.process_pet_created,
+                auto_ack=False,
+            )
+            self.channel.basic_consume(
+                queue=config["PET_REFRESH_QUEUE"],
+                on_message_callback=self.process_refresh,
+                auto_ack=False,
+            )
+            print("Consumer ready..")
+            self.channel.start_consuming()
+        except pika.exceptions.AMQPConnectionError as e:
+            print(f"[!] Failed to connect: {e}")
 
     def process_pet_created(self, ch, method, properties, body):
         try:
@@ -58,13 +61,28 @@ class QueueConsumer:
             if not image_bytes:
                 raise Exception("Image not found on S3")
 
-            vector = self.generator.process_embedding("image", image_bytes)
             description = self.image_processor.describe_image(image_bytes)
 
-            self.db.insert_data(vector, data)
+            image_vector = self.generator.process_embedding("image", image_bytes)
+            text_vector = self.generator.process_embedding("text", description)
 
-            metadata = {"id": pet_id, "type": pet_type}
-            neighbours = self.db.search(vector, 4, metadata)
+            self.db.insert_data(
+                collection="pets_images",
+                vector=image_vector,
+                metadata={"id": pet_id, "type": pet_type, "image": image_key},
+            )
+            self.db.insert_data(
+                collection="pets_texts",
+                vector=text_vector,
+                metadata={"id": pet_id, "type": pet_type, "content": description},
+            )
+
+            neighbours = self.db.search(
+                collection="pets_images",
+                query=image_vector,
+                metadata={"id": pet_id, "type": pet_type},
+                top_k=4,
+            )
 
             self.producer.produce_pet_processed(
                 {
@@ -85,7 +103,11 @@ class QueueConsumer:
                     "info": "Error occurred while creating pet",
                 }
             )
-            self.db.delete(pet_id)
+            ch.basic_ack(delivery_tag=method.delivery_tag)
+
+            self.db.delete(collection="pets_images", id=pet_id)
+            self.db.delete(collection="pets_texts", id=pet_id)
+
             print(f"Error occurred: {e}")
 
     def process_refresh(self, ch, method, properties, body):
@@ -93,16 +115,17 @@ class QueueConsumer:
             data = json.loads(body.decode("utf-8"))
 
             pet_id = data.get("id")
-            db_data = self.db.get_by_id(pet_id)
+            db_data = self.db.get_by_id(collection="pets_images", id=pet_id)
             if not db_data:
-                ch.basic_ack(delivery_tag=method.delivery_tag)
                 raise Exception("Pet with this id not found.")
 
             vector = db_data["vector"]
             pet_type = db_data["type"]
 
             metadata = {"id": pet_id, "type": pet_type}
-            neighbours = self.db.search(vector, 4, metadata)
+            neighbours = self.db.search(
+                collection="pets_images", query=vector, metadata=metadata, top_k=4
+            )
 
             self.producer.produce_pet_processed({"id": pet_id, "data": neighbours})
             ch.basic_ack(delivery_tag=method.delivery_tag)
@@ -115,6 +138,7 @@ class QueueConsumer:
                     "info": "Error occurred while refreshing pet",
                 }
             )
+            ch.basic_ack(delivery_tag=method.delivery_tag)
             print(f"Error occurred: {e}")
 
     def _setup_channel(self):

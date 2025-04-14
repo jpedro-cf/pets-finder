@@ -8,10 +8,10 @@ pillow
 boto3
 pika
 python-dotenv
-pymilvus
 redis
 fastapi
 uvicorn
 python-multipart
 google-genai
-git+https://github.com/openai/CLIP.git
+transformers
+qdrant-client

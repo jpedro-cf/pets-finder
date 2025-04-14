@@ -4,11 +4,10 @@ from embeddings.text_embedding import TextEmbedding
 
 
 class EmbeddingGenerator(DataEmbedding):
-    def __init__(self, clip, model, preprocess):
-        self.clip, self.model, self.preprocess = clip, model, preprocess
+    def __init__(self, model, processor, device):
         self.options = {
-            "image": ImageEmbedding(self.clip, self.model, self.preprocess),
-            "text": TextEmbedding(self.clip, self.model, self.preprocess),
+            "image": ImageEmbedding(model, processor, device),
+            "text": TextEmbedding(model, processor, device),
         }
 
     def process_embedding(self, type, data):

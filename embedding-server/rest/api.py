@@ -27,13 +27,16 @@ class Api:
                     status_code=400, detail="Either 'text' or 'image' must be provided."
                 )
 
-            data, data_type = text, "text"
+            data, data_type, collection = text, "text", "pets_texts"
             if image:
                 data_type = "image"
+                collection = "pets_images"
                 data = io.BytesIO(await image.read())
             vector = self.generator.process_embedding(data_type, data)
 
-            res = self.db.search(vector, 6, {})
+            res = self.db.search(
+                collection=collection, metadata={}, top_k=9, query=vector
+            )
             return {"ids": res}
 
     def run(self):

@@ -5,15 +5,14 @@ from embeddings.embeddings import DataEmbedding
 
 
 class ImageEmbedding(DataEmbedding):
-    def __init__(self, clip, model, preprocess):
-        self.clip, self.model, self.preprocess = clip, model, preprocess
+    def __init__(self, model, processor, device):
+        self.model, self.processor, self.device = model, processor, device
 
     def process_embedding(self, type, data):
         image = Image.open(data)
-        image_input = self.preprocess(image).unsqueeze(0).to("cpu")
 
+        processed = self.processor(images=image, return_tensors="pt").to(self.device)
         with torch.no_grad():
-            image_features = self.model.encode_image(image_input)
+            image_features = self.model.get_image_features(**processed)
 
-        image_features /= image_features.norm(dim=-1, keepdim=True)
-        return image_features.cpu().numpy().flatten().tolist()
+        return image_features.cpu().squeeze(0).numpy().tolist()

@@ -1,28 +1,32 @@
 import os
 import sys
 import threading
-import clip
 from os.path import join, dirname
 from dotenv import load_dotenv
+import torch
 
 from embeddings.embedding_generator import EmbeddingGenerator
 from processors.image_processor import ImageProcessor
+from transformers import CLIPProcessor, CLIPModel
 from rest.api import Api
 
 load_dotenv(override=True)
 sys.dont_write_bytecode = True
 
 from aws.s3 import S3Client
-from database.milvus import MilvusDatabase
+from database.qdrant import QdrantDatabase
 from queues.consumer import QueueConsumer
 
 
 def start():
-    model, preprocess = clip.load("ViT-B/32", "cpu")
+    model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
+    processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    model.to(device)
 
-    embedding_generator = EmbeddingGenerator(clip, model, preprocess)
+    embedding_generator = EmbeddingGenerator(model, processor, device)
 
-    database = MilvusDatabase("conn1")
+    database = QdrantDatabase()
     obj_storage = S3Client()
     image_processor = ImageProcessor()
 

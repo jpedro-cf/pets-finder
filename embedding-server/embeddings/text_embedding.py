@@ -4,15 +4,13 @@ from embeddings.embeddings import DataEmbedding
 
 
 class TextEmbedding(DataEmbedding):
-    def __init__(self, clip, model, preprocess):
-        self.clip, self.model, self.preprocess = clip, model, preprocess
+    def __init__(self, model, processor, device):
+        self.model, self.processor, self.device = model, processor, device
 
     def process_embedding(self, type, data):
-        text_input = self.clip.tokenize([data]).to("cpu")
-
         with torch.no_grad():
-            text_features = self.model.encode_text(text_input)
-
-        text_features /= text_features.norm(dim=-1, keepdim=True)
-
-        return text_features.cpu().numpy().flatten().tolist()
+            processed_text = self.processor(text=data, return_tensors="pt").to(
+                self.device
+            )
+            text_features = self.model.get_text_features(**processed_text)
+        return text_features.cpu().squeeze(0).numpy().tolist()
