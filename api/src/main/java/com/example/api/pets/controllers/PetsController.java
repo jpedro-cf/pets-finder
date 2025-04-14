@@ -11,14 +11,21 @@ import com.example.api.pets.services.PetsService;
 import com.example.api.users.entities.UserEntity;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,6 +33,9 @@ import java.util.UUID;
 @RestController
 @RequestMapping("pets")
 public class PetsController {
+    @Value("${app.files.folder}")
+    private String FILES_FOLDER;
+
     @Autowired
     private CacheService<List<PetEntity>> cache;
     @Autowired
@@ -68,6 +78,28 @@ public class PetsController {
     @GetMapping()
     public ResponseEntity findAll(Pageable pageable){
         return ResponseEntity.ok(service.listPets(pageable));
+    }
+
+    @GetMapping("image/{filename}")
+    public ResponseEntity getPetImage(@PathVariable String filename){
+        try {
+            Path filePath = Paths.get(FILES_FOLDER).resolve(filename).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (!resource.exists() || !resource.isReadable()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            String contentType = Files.probeContentType(filePath);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .body(resource);
+
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+
     }
 
 }

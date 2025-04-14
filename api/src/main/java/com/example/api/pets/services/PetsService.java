@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PetsService {
@@ -65,11 +66,20 @@ public class PetsService {
     }
 
     public List<PetEntity> findPetsByIds(List<String> ids) {
-        Iterable<UUID> uuids = ids.stream().
+        List<UUID> uuids = ids.stream().
                 map(UUID::fromString).
                 toList();
 
-        return repository.findAllById(uuids);
+        List<PetEntity> foundPets = repository.findAllById(uuids);
+
+        Map<UUID, PetEntity> petMap = foundPets.stream()
+                .collect(Collectors.toMap(PetEntity::getId, pet -> pet));
+
+        // In order
+        return uuids.stream()
+                .map(petMap::get)
+                .filter(Objects::nonNull)
+                .toList();
     }
 
     public Page<PetEntity> listPets(Pageable pageable){
