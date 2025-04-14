@@ -2,11 +2,13 @@ import { PawPrint } from 'lucide-react'
 import { Button } from '../ui/button'
 import { useDialogStore } from '@/hooks/useDialog'
 import { Dialogs } from '@/types/dialogs'
+import { useAuth } from '@/hooks/useAuth'
 
 export function Header() {
     const { openDialog } = useDialogStore()
+    const { user } = useAuth()
     return (
-        <header className="border-b-1 p-4 flex justify-between gap-3">
+        <header className="border-b-1 p-4 flex justify-between items-center gap-3">
             <div className="flex gap-3">
                 <div className="bg-emerald-300/80 h-full w-11 flex items-center justify-center rounded-md">
                     <PawPrint size={32} />
@@ -19,9 +21,15 @@ export function Header() {
                     </span>
                 </div>
             </div>
-            <Button onClick={() => openDialog(Dialogs.LOGIN, null)}>
-                Login
-            </Button>
+            {user ? (
+                <div className="bg-emerald-300 rounded-full w-8 h-8 flex items-center justify-center">
+                    {user.name[0].toUpperCase()}
+                </div>
+            ) : (
+                <Button onClick={() => openDialog(Dialogs.LOGIN, null)}>
+                    Login
+                </Button>
+            )}
         </header>
     )
 }

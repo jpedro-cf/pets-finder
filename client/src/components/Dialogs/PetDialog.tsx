@@ -48,7 +48,9 @@ export function PetDialog() {
                     <div className="grid grid-cols-3 gap-5">
                         <div className="overflow-hidden h-full sm:min-h-[70vh] w-full rounded-md">
                             <img
-                                src="#"
+                                src={`${import.meta.env.VITE_CDN_URL}/${
+                                    pet.image
+                                }`}
                                 alt="Pet image"
                                 className="object-cover w-full h-full"
                             />

@@ -29,7 +29,11 @@ interface SimilarityResult {
 
 export const PetsApi = {
     createPet: async (data: ICreatePet): Promise<IPet> => {
-        const res = await axiosInstance.post('/pets', data)
+        const res = await axiosInstance.post('/pets', data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
         return res.data
     },
 
@@ -51,6 +55,7 @@ export const PetsApi = {
             params: {
                 page: data.page ? data.page : 0,
                 size: data.size ? data.size : 9,
+                sort: 'date,desc',
             },
         })
         return {

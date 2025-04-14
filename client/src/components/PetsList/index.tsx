@@ -24,7 +24,7 @@ export function PetsList({ loading }: Props) {
                       ))
                     : petsListData?.pets?.map((pet) => (
                           <PetsCard key={pet.id} pet={pet}>
-                              <PetCardImage />
+                              <PetCardImage className="h-[200px]" />
                               <PetCardContent>
                                   <PetCardActions />
                               </PetCardContent>

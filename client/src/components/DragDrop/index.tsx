@@ -132,8 +132,8 @@ export function DragDropFileInfo({
             <CardContent className="flex p-3 gap-3 items-center">
                 <Image className="text-primary/80" size={24} />
                 <div className="flex items-center justify-between w-full">
-                    <div>
-                        <span className="font-semibold text-gray-700">
+                    <div className="flex items-center gap-1">
+                        <span className="font-semibold text-gray-700 truncate max-w-[150px] inline-block">
                             {currentFile?.name}{' '}
                         </span>
                         <span className="text-xs text-gray-400">
