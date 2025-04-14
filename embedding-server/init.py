@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import torch
 
 from embeddings.embedding_generator import EmbeddingGenerator
+from files.main_files_storage import MainFilesStorage
 from processors.image_processor import ImageProcessor
 from transformers import CLIPProcessor, CLIPModel
 from rest.api import Api
@@ -13,7 +14,6 @@ from rest.api import Api
 load_dotenv(override=True)
 sys.dont_write_bytecode = True
 
-from aws.s3 import S3Client
 from database.qdrant import QdrantDatabase
 from queues.consumer import QueueConsumer
 
@@ -27,7 +27,7 @@ def start():
     embedding_generator = EmbeddingGenerator(model, processor, device)
 
     database = QdrantDatabase()
-    obj_storage = S3Client()
+    obj_storage = MainFilesStorage()
     image_processor = ImageProcessor()
 
     consumer = QueueConsumer(

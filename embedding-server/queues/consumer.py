@@ -1,9 +1,10 @@
 import json
+import time
 import pika
 
-from aws.s3 import S3Client
 from database.database import VectorDatabase
 from embeddings.embeddings import DataEmbedding
+from files.files_storage import FilesStorage
 from processors.image_processor import ImageProcessor
 from queues.producer import QueueProducer
 
@@ -14,7 +15,7 @@ class QueueConsumer:
     def __init__(
         self,
         database: VectorDatabase,
-        storage: S3Client,
+        storage: FilesStorage,
         embedding_generator: DataEmbedding,
         image_processor: ImageProcessor,
     ):
@@ -25,28 +26,30 @@ class QueueConsumer:
         self.image_processor = image_processor
 
     def listen(self):
-        try:
-            self.connection = pika.BlockingConnection(
-                pika.ConnectionParameters("localhost", heartbeat=30, port=5672)
-            )
-            self.channel = self.connection.channel()
+        while True:
+            try:
+                self.connection = pika.BlockingConnection(
+                    pika.ConnectionParameters("localhost", heartbeat=60, port=5672)
+                )
+                self.channel = self.connection.channel()
+                self._setup_channel()
 
-            self._setup_channel()
+                self.channel.basic_consume(
+                    queue=config["PET_CREATED_QUEUE"],
+                    on_message_callback=self.process_pet_created,
+                    auto_ack=False,
+                )
+                self.channel.basic_consume(
+                    queue=config["PET_REFRESH_QUEUE"],
+                    on_message_callback=self.process_refresh,
+                    auto_ack=False,
+                )
 
-            self.channel.basic_consume(
-                queue=config["PET_CREATED_QUEUE"],
-                on_message_callback=self.process_pet_created,
-                auto_ack=False,
-            )
-            self.channel.basic_consume(
-                queue=config["PET_REFRESH_QUEUE"],
-                on_message_callback=self.process_refresh,
-                auto_ack=False,
-            )
-            print("Consumer ready..")
-            self.channel.start_consuming()
-        except pika.exceptions.AMQPConnectionError as e:
-            print(f"[!] Failed to connect: {e}")
+                print("Consumer ready..")
+                self.channel.start_consuming()
+            except pika.exceptions.AMQPConnectionError as e:
+                print(f"[!] Failed to connect: {e}")
+                time.sleep(5)
 
     def process_pet_created(self, ch, method, properties, body):
         try:
@@ -57,7 +60,7 @@ class QueueConsumer:
             image_key = data.get("image")
             pet_type = data.get("type")
 
-            image_bytes = self.object_storage.download_image(image_key)
+            image_bytes = self.object_storage.download_file(image_key)
             if not image_bytes:
                 raise Exception("Image not found on S3")
 

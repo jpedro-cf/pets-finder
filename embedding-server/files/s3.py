@@ -2,8 +2,10 @@ from io import BytesIO
 import boto3
 import os
 
+from files.files_storage import FilesStorage
 
-class S3Client:
+
+class S3Client(FilesStorage):
     def __init__(self):
         self.client = boto3.client(
             "s3",
@@ -12,7 +14,7 @@ class S3Client:
             region_name=os.environ.get("AWS_REGION"),
         )
 
-    def download_image(self, key) -> BytesIO:
+    def download_file(self, key) -> BytesIO:
         bucket_name = os.environ["AWS_S3_BUCKET"]
 
         file_stream = BytesIO()
