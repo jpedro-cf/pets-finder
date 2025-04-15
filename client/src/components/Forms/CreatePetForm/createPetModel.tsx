@@ -3,7 +3,9 @@ import { useFormField } from '@/components/ui/form'
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
+import { AxiosError } from 'axios'
 import { useController, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 const petFormSchema = z.object({
@@ -34,6 +36,16 @@ export function useCreatePet() {
 
     const { mutate: createPet, isPending } = useMutation({
         mutationFn: PetsApi.createPet,
+        onSuccess: () => {
+            // yes, that's lazy, i know :/
+            window.location.reload()
+            toast('Pet criado com sucesso!')
+        },
+        onError: (e: AxiosError) => {
+            const msg =
+                e.status == 401 ? 'Você precisa estar autenticado.' : e.message
+            toast(msg ?? 'Erro ao criar pet')
+        },
     })
 
     function handleSubmit(data: z.infer<typeof petFormSchema>) {
