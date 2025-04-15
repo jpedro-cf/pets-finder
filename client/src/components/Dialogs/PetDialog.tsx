@@ -42,15 +42,15 @@ export function PetDialog() {
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose} key={Dialogs.LOGIN}>
-            <DialogContent className="w-[95vw] sm:max-w-[calc(80vw)-2rem] p-5 gap-1 bg-slate-50 h-[95vh] overflow-auto">
-                <DialogHeader className="mb-3 text-start">
+            <DialogContent className="w-[90vw] sm:max-w-[calc(80vw)-2rem] p-5 gap-0 bg-slate-50 h-[90vh] overflow-auto">
+                <DialogHeader className="mb-1 text-start">
                     <DialogTitle className="text-2xl font-bold">
                         Detalhes do Pet
                     </DialogTitle>
                 </DialogHeader>
                 {!isLoading && pet && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div className="overflow-hidden h-[250px] md:h-full w-full rounded-md">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 overflow-auto max-h-full">
+                        <div className="overflow-hidden h-[250px] md:h-full max-h-full w-full rounded-md">
                             <img
                                 src={`${import.meta.env.VITE_IMAGES_URL}/${
                                     pet.image

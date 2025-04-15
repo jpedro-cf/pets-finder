@@ -19,7 +19,7 @@ export function SimilarPets({ pets, className, ...props }: Props) {
                                 id: pet.id,
                             })
                         }}
-                        className="block overflow-hidden rounded-md h-[100px] cursor-pointer"
+                        className="block overflow-hidden rounded-md h-[100px] sm:h-[150px] cursor-pointer"
                     >
                         <img
                             className="w-full h-full object-cover"
