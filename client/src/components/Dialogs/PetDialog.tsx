@@ -4,14 +4,17 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import { formatPhoneNumber } from '@/lib/utils'
 import { useQuery } from '@tanstack/react-query'
 import { PetsApi } from '@/api/pets'
-import { Calendar, FileText, MapPinned, Phone } from 'lucide-react'
+import { Calendar, FileText, MapPin, MapPinned, Phone } from 'lucide-react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { useEffect } from 'react'
 import { PetCardContent, PetCardImage, PetsCard } from '../PetsCard'
+import { SimilarPets } from '../SimilarPets'
+import { Separator } from '../ui/separator'
+import { Button } from '../ui/button'
 
 export function PetDialog() {
-    const { dialogs, closeDialog } = useDialogStore()
+    const { dialogs, closeDialog, openDialog } = useDialogStore()
     const dialogData: IDialog<{ id: string }> = dialogs[Dialogs.PET_DETAILS]
     const isOpen = dialogData && dialogData.isOpen
 
@@ -40,71 +43,81 @@ export function PetDialog() {
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose} key={Dialogs.LOGIN}>
-            <DialogContent className="w-[80vw] sm:max-w-[calc(80vw)-2rem] p-5">
-                <DialogHeader>
-                    <DialogTitle>Detalhes do Pet</DialogTitle>
+            <DialogContent className="w-[70vw] sm:max-w-[calc(80vw)-2rem] p-5 bg-slate-50">
+                <DialogHeader className="mb-3">
+                    <DialogTitle className="text-2xl font-bold">
+                        Detalhes do Pet
+                    </DialogTitle>
                 </DialogHeader>
                 {!isLoading && pet && (
-                    <div className="grid grid-cols-3 gap-5">
-                        <div className="overflow-hidden h-full sm:min-h-[70vh] w-full rounded-md">
+                    <div className="grid grid-cols-2 gap-5">
+                        <div className="overflow-hidden h-auto max-h-[70vh] w-full rounded-md">
                             <img
-                                src={`${import.meta.env.VITE_CDN_URL}/${
+                                src={`${import.meta.env.VITE_IMAGES_URL}/${
                                     pet.image
                                 }`}
                                 alt="Pet image"
                                 className="object-cover w-full h-full"
                             />
                         </div>
-                        <div className="col-span-2">
-                            <div className="mb-5 text-gray-700 text-sm p-3 rounded-md bg-emerald-100 border-1 border-emerald-200">
-                                <span className="font-semibold text-lg">
-                                    <FileText className="inline" size={20} />{' '}
+                        <div className="flex flex-col gap-4">
+                            <div>
+                                <h3 className="font-medium mb-2 text-lg">
                                     Descrição:
-                                </span>
-                                <p className="mt-3 text-sm">
-                                    {pet.description}
-                                </p>
+                                </h3>
+                                <p className="text-sm">{pet.description}</p>
                             </div>
-                            <span className="font-semibold text-lg text-gray-700">
-                                Mais informações
-                            </span>
-                            <div className="grid grid-cols-3 gap-4 mt-1">
-                                <div className="text-gray-700 text-sm bg-gray-100 py-3 px-5 rounded-md font-semibold">
-                                    <Phone className="inline me-1" size={16} />
-                                    {formatPhoneNumber(pet.contact_info)}
-                                </div>
-                                <div className="text-gray-700 text-sm bg-gray-100 py-3 px-5 rounded-md font-semibold">
-                                    <Calendar
-                                        className="inline me-1"
-                                        size={16}
-                                    />
+                            <div className="text-sm flex flex-col gap-2">
+                                <span>
+                                    <span className="text-emerald-700/80">
+                                        <MapPin
+                                            className="inline me-1"
+                                            size={20}
+                                        />
+                                        Localização:
+                                    </span>{' '}
+                                    {pet.location}
+                                </span>
+                                <span>
+                                    <span className="text-emerald-700/80">
+                                        <Calendar
+                                            className="inline me-1"
+                                            size={20}
+                                        />
+                                        Encontrado em:
+                                    </span>{' '}
                                     {format(pet.date, 'd LLLL y', {
                                         locale: ptBR,
                                     })}
-                                </div>
-                                <div className="text-gray-700 text-sm bg-gray-100 py-3 px-5 rounded-md font-semibold">
-                                    <MapPinned
-                                        className="inline me-1"
-                                        size={16}
-                                    />
-                                    {pet.location}
+                                </span>
+                            </div>
+                            <Separator />
+                            <div>
+                                <h3 className="text-lg font-medium mb-2">
+                                    Informações de contato:
+                                </h3>
+                                <div className="text-sm flex flex-col gap-2">
+                                    <span>
+                                        <span className="text-emerald-700/80">
+                                            <Phone
+                                                className="inline me-1"
+                                                size={20}
+                                            />
+                                            Telefone:
+                                        </span>{' '}
+                                        {formatPhoneNumber(pet.contact_info)}
+                                    </span>
                                 </div>
                             </div>
+                            <Button size={'lg'} className="mt-3" asChild>
+                                <a href={`tel:+${pet.contact_info}`}>
+                                    Entrar em contato
+                                </a>
+                            </Button>
                             {pet.similar.length > 0 && (
                                 <>
-                                    <span className="mt-3 mb-1 block text-lg text-gray-700 font-semibold">
-                                        Pets Similares:
-                                    </span>
-                                    <div className="grid grid-cols-4 gap-2">
-                                        {pet.similar.map((similar) => (
-                                            <PetsCard
-                                                pet={{ type: '', ...similar }}
-                                            >
-                                                <PetCardImage />
-                                                <PetCardContent />
-                                            </PetsCard>
-                                        ))}
-                                    </div>
+                                    <Separator />
+                                    <SimilarPets pets={pet.similar} />
                                 </>
                             )}
                         </div>

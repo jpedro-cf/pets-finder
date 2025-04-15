@@ -1,25 +1,33 @@
 import { PetsApi } from '@/api/pets'
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 
 export function usePetsList() {
     const {
         data: petsListData,
-        isFetching: petsListLoading,
+        fetchNextPage,
+        hasNextPage,
         refetch: refetchPets,
-    } = useQuery({
+    } = useInfiniteQuery({
         queryKey: ['pets'],
-        queryFn: () =>
+        queryFn: ({ pageParam = 0 }) =>
             PetsApi.listPets({
-                page: '0',
+                page: String(pageParam),
                 size: '9',
             }),
-        retry: 2,
+        initialPageParam: 0,
+        getNextPageParam: (lastPage) => {
+            const nextPage = lastPage.pageNumber + 1
+
+            return nextPage < lastPage.totalPages ? nextPage : undefined
+        },
         refetchOnWindowFocus: false,
+        retry: 2,
     })
 
     return {
         petsListData,
-        petsListLoading,
+        fetchNextPage,
+        hasNextPage,
         refetchPets,
     }
 }

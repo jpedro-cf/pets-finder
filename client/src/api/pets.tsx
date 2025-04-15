@@ -21,6 +21,7 @@ export interface ISimilarityRequest {
 interface ListPetsResult {
     pets: IPet[]
     totalPages: number
+    pageNumber: number
 }
 
 interface SimilarityResult {
@@ -61,6 +62,7 @@ export const PetsApi = {
         return {
             pets: res.data.content,
             totalPages: res.data.totalPages,
+            pageNumber: res.data.number,
         }
     },
 

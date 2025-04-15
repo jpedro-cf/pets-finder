@@ -3,22 +3,25 @@ import { LoginDialog } from '@/components/Dialogs/LoginDialog'
 import { PetDialog } from '@/components/Dialogs/PetDialog'
 import { RegisterDialog } from '@/components/Dialogs/RegisterDialog'
 import { SearchForm } from '@/components/Forms/SearchForm'
-import { useSearch } from '@/components/Forms/SearchForm/searchFormModel'
 import { Header } from '@/components/Header'
 import { PetsList } from '@/components/PetsList'
 import { Button } from '@/components/ui/button'
 import { UploadPetImage } from '@/components/UploadPetImage'
-import { useUploadPetImage } from '@/components/UploadPetImage/uploadPetImageModel'
-import { useDialogStore } from '@/hooks/useDialog'
-import { Dialogs } from '@/types/dialogs'
 import { Dog } from 'lucide-react'
-const scrollBar = '[&::-webkit-scrollbar]:w-1.5 '
-export function Home() {
-    const searchData = useSearch()
-    const uploadPetImage = useUploadPetImage()
-    const { openDialog } = useDialogStore()
+import { useHome } from './homeModel'
+import { Dialogs } from '@/types/dialogs'
+const scrollBar =
+    '[&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-primary/70 '
 
-    const loading = searchData.searching || uploadPetImage.requesting
+export function Home() {
+    const {
+        openDialog,
+        searchData,
+        uploadPetImage,
+        listData,
+        loading,
+        handleScroll,
+    } = useHome()
 
     return (
         <>
@@ -31,7 +34,10 @@ export function Home() {
                         <aside className="w-full md:w-1/3 border-r-2 p-5">
                             <UploadPetImage {...uploadPetImage} />
                         </aside>
-                        <main className="w-full md:w-2/3 p-5 pe-2">
+                        <main
+                            className={`w-full md:w-2/3 p-5 pe-2 md:overflow-auto ${scrollBar}`}
+                            onScroll={handleScroll}
+                        >
                             <div className="mb-5 flex items-center gap-2">
                                 <SearchForm {...searchData} />
                                 <Button
@@ -43,7 +49,7 @@ export function Home() {
                                     Encontrei um pet <Dog />{' '}
                                 </Button>
                             </div>
-                            <PetsList loading={loading} />
+                            <PetsList loading={loading} data={listData} />
                         </main>
                     </div>
                 </div>

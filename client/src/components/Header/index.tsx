@@ -10,7 +10,7 @@ export function Header() {
     return (
         <header className="border-b-1 p-4 flex justify-between items-center gap-3">
             <div className="flex gap-3">
-                <div className="bg-emerald-300/80 h-full w-11 flex items-center justify-center rounded-md">
+                <div className="bg-emerald-300/80 p-2 h-full w-11 flex items-center justify-center rounded-md">
                     <PawPrint size={32} />
                 </div>
                 <div>

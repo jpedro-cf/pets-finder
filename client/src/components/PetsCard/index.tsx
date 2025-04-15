@@ -56,7 +56,7 @@ export function PetCardImage({
             {...props}
         >
             <img
-                src={`${import.meta.env.VITE_CDN_URL}/${pet.image}`}
+                src={`${import.meta.env.VITE_IMAGES_URL}/${pet.image}`}
                 alt="Dog image"
                 className="object-cover w-full h-full"
             />
