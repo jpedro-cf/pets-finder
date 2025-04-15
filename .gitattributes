@@ -1,1 +1,2 @@
 *.java linguist-detectable=true
+*.ts* linguist-detectable=false
