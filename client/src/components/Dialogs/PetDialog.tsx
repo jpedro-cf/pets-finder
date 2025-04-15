@@ -42,8 +42,8 @@ export function PetDialog() {
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose} key={Dialogs.LOGIN}>
-            <DialogContent className="w-[90vw] sm:max-w-[calc(80vw)-2rem] p-5 gap-0 bg-slate-50 h-[90vh] overflow-auto">
-                <DialogHeader className="mb-1 text-start">
+            <DialogContent className="w-[90vw] sm:max-w-[calc(80vw)-2rem] p-5 bg-slate-50 max-h-[95vh] overflow-auto flex flex-col gap-5">
+                <DialogHeader className="text-start">
                     <DialogTitle className="text-2xl font-bold">
                         Detalhes do Pet
                     </DialogTitle>

@@ -39,12 +39,13 @@ export const PetsApi = {
     },
 
     getPetById: async (id: string): Promise<IPet> => {
+        // not required, this is used only for progress animation
+        await new Promise((resolve) => setTimeout(resolve, 1000))
         const res = await axiosInstance.get(`/pets/${id}`)
         return res.data
     },
 
     getPetsByIds: async (ids: string[]): Promise<IPet[]> => {
-        await new Promise((resolve) => setTimeout(resolve, 1000))
         const res = await axiosInstance.get(`/pets/ids`, {
             params: { data: ids.toString() },
         })
@@ -69,6 +70,7 @@ export const PetsApi = {
     requestSimilarity: async (
         data: ISimilarityRequest
     ): Promise<SimilarityResult> => {
+        // not required, this is used only for progress animation
         await new Promise((resolve) => setTimeout(resolve, 1000))
         const form = new FormData()
         form.append('text', data.text)
