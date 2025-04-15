@@ -31,17 +31,18 @@ export function Home() {
                     <div
                         className={`flex flex-col md:flex-row h-full overflow-y-auto ${scrollBar}`}
                     >
-                        <aside className="w-full md:w-1/3 border-r-2 p-5">
+                        <aside className="w-full lg:w-1/3 border-r-2 p-5">
                             <UploadPetImage {...uploadPetImage} />
                         </aside>
                         <main
-                            className={`w-full md:w-2/3 p-5 pe-2 md:overflow-auto ${scrollBar}`}
+                            className={`w-full lg:w-2/3 p-5 pe-2 md:overflow-auto ${scrollBar}`}
                             onScroll={handleScroll}
                         >
-                            <div className="mb-5 flex items-center gap-2">
+                            <div className="mb-5 flex flex-col sm:flex-row items-center gap-2">
                                 <SearchForm {...searchData} />
                                 <Button
                                     type="button"
+                                    className="w-full sm:w-auto"
                                     onClick={() =>
                                         openDialog(Dialogs.CREATE_PET, null)
                                     }

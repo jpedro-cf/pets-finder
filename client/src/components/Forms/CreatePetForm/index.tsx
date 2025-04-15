@@ -29,7 +29,7 @@ export function CreatePetForm() {
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(handleSubmit)}
-                className="flex gap-5 h-full items-start"
+                className="flex flex-col lg:flex-row gap-5 h-full items-start"
             >
                 <FormField
                     control={form.control}
@@ -37,17 +37,17 @@ export function CreatePetForm() {
                     render={({ fieldState }) => (
                         <DragDropComponent
                             onFileSelect={handleFileSelect}
-                            className={`w-1/2 h-[350px] ${
+                            className={`w-full lg:w-1/2 h-[350px] ${
                                 fieldState.error && 'bg-red-50 border-red-400'
                             }`}
                         >
                             <DragDropContent />
                             <DragDropImagePreview />
-                            <DragDropFileInfo className="absolute z-10 overflow-hidden py-1 block w-80 m-5 bottom-0 bg-emerald-50" />
+                            <DragDropFileInfo className="absolute z-10 overflow-hidden py-1 block w-[90%] m-5 bottom-0 bg-emerald-50" />
                         </DragDropComponent>
                     )}
                 />
-                <div className="grid grid-cols-2 gap-4 items-start h-full auto-rows-max">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start w-full h-full auto-rows-max">
                     <FormField
                         control={form.control}
                         name="color"
@@ -95,7 +95,7 @@ export function CreatePetForm() {
                         control={form.control}
                         name="location"
                         render={({ field }) => (
-                            <FormItem className="col-span-2">
+                            <FormItem className="md:col-span-2">
                                 <FormLabel>Localização</FormLabel>
                                 <FormControl>
                                     <Input
@@ -110,7 +110,7 @@ export function CreatePetForm() {
                     <Button
                         type="submit"
                         disabled={isPending}
-                        className="col-span-2 mt-4"
+                        className="md:col-span-2 mt-4"
                     >
                         {isPending ? 'Enviando...' : 'Cadastrar Pet'}
                     </Button>

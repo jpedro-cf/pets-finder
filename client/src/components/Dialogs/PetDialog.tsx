@@ -4,17 +4,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import { formatPhoneNumber } from '@/lib/utils'
 import { useQuery } from '@tanstack/react-query'
 import { PetsApi } from '@/api/pets'
-import { Calendar, FileText, MapPin, MapPinned, Phone } from 'lucide-react'
+import { Calendar, MapPin, Phone } from 'lucide-react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { useEffect } from 'react'
-import { PetCardContent, PetCardImage, PetsCard } from '../PetsCard'
 import { SimilarPets } from '../SimilarPets'
 import { Separator } from '../ui/separator'
 import { Button } from '../ui/button'
 
 export function PetDialog() {
-    const { dialogs, closeDialog, openDialog } = useDialogStore()
+    const { dialogs, closeDialog } = useDialogStore()
     const dialogData: IDialog<{ id: string }> = dialogs[Dialogs.PET_DETAILS]
     const isOpen = dialogData && dialogData.isOpen
 
@@ -43,15 +42,15 @@ export function PetDialog() {
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose} key={Dialogs.LOGIN}>
-            <DialogContent className="w-[70vw] sm:max-w-[calc(80vw)-2rem] p-5 bg-slate-50">
-                <DialogHeader className="mb-3">
+            <DialogContent className="w-[95vw] sm:max-w-[calc(80vw)-2rem] p-5 gap-1 bg-slate-50 h-[95vh] overflow-auto">
+                <DialogHeader className="mb-3 text-start">
                     <DialogTitle className="text-2xl font-bold">
                         Detalhes do Pet
                     </DialogTitle>
                 </DialogHeader>
                 {!isLoading && pet && (
-                    <div className="grid grid-cols-2 gap-5">
-                        <div className="overflow-hidden h-auto max-h-[70vh] w-full rounded-md">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div className="overflow-hidden h-[250px] md:h-full w-full rounded-md">
                             <img
                                 src={`${import.meta.env.VITE_IMAGES_URL}/${
                                     pet.image

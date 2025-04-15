@@ -23,7 +23,12 @@ export function useUploadPetImage() {
         mutationFn: PetsApi.getPetsByIds,
         onSuccess: (data) => {
             setProgress('100%')
-            client.setQueryData(['pets'], { pets: data, totalPages: 1 })
+            client.setQueryData(['pets'], (old) => {
+                return {
+                    pages: [{ pets: data, totalPages: 1, pageNumber: 1 }],
+                    pageParams: [0],
+                }
+            })
         },
     })
 

@@ -19,9 +19,14 @@ export function useSearch() {
         mutationFn: PetsApi.getPetsByIds,
         onSuccess: (data) => {
             client.setQueryData(['pets'], {
-                pets: data,
-                totalPages: 1,
-                loading: false,
+                pages: [
+                    {
+                        pets: data,
+                        totalPages: 1,
+                        pageNumber: 1,
+                    },
+                ],
+                pageParams: [0],
             })
         },
     })
@@ -30,12 +35,6 @@ export function useSearch() {
         resolver: zodResolver(searchSchema),
     })
     function handleSearch(values: z.infer<typeof searchSchema>) {
-        client.setQueryData(['pets'], (old: any) => {
-            return {
-                ...old,
-                loading: true,
-            }
-        })
         requestSimilarity(values)
     }
 

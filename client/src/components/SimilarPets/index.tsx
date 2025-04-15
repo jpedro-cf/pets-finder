@@ -11,7 +11,7 @@ export function SimilarPets({ pets, className, ...props }: Props) {
     const { openDialog } = useDialogStore()
     return (
         <div className={cn('rounded-md', className)}>
-            <div className={'grid grid-cols-4 gap-2'}>
+            <div className={'grid grid-cols-2 sm:grid-cols-4 gap-2'}>
                 {pets.map((pet) => (
                     <div
                         onClick={() => {

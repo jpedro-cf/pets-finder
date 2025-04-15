@@ -14,7 +14,7 @@ export function CreatePetDialog() {
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose} key={Dialogs.LOGIN}>
-            <DialogContent className="w-[80vw] sm:max-w-[calc(80vw)-2rem] p-5 ">
+            <DialogContent className="w-[90vw] sm:max-w-[calc(80vw)-2rem] p-5 max-h-[95vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Encontrei um Pet</DialogTitle>
                 </DialogHeader>

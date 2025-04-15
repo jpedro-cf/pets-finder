@@ -80,12 +80,15 @@ export function DragDropContent({
     const { preview, inputRef, currentFile } = data
     return (
         <div
-            className={cn('flex flex-col gap-3 items-center', className)}
+            className={cn(
+                'flex flex-col gap-3 items-center justify-center text-center',
+                className
+            )}
             {...props}
             hidden={currentFile != null}
         >
             <Image className="text-primary/80" size={52} />
-            <span className="text-md leading-1 text-gray-500 font-semibold">
+            <span className="text-md leading-5 text-gray-500 font-semibold">
                 Escolha uma imagem ou arraste aqui.
             </span>
             <span className="text-sm text-gray-500">
@@ -133,7 +136,7 @@ export function DragDropFileInfo({
                 <Image className="text-primary/80" size={24} />
                 <div className="flex items-center justify-between w-full">
                     <div className="flex items-center gap-1">
-                        <span className="font-semibold text-gray-700 truncate max-w-[150px] inline-block">
+                        <span className="font-semibold text-gray-700 truncate max-w-[70px] lg:max-w-[130px] inline-block">
                             {currentFile?.name}{' '}
                         </span>
                         <span className="text-xs text-gray-400">

@@ -49,7 +49,7 @@ export function RegisterForm() {
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(handleSubmit)}
-                className="grid grid-cols-2 gap-3"
+                className="grid grid-cols-1 sm:grid-cols-2 gap-3"
             >
                 <FormField
                     control={form.control}
@@ -122,7 +122,7 @@ export function RegisterForm() {
                     disabled={isRegistering}
                     type="submit"
                     size={'lg'}
-                    className="w-full col-span-2 mt-5"
+                    className="w-full sm:col-span-2 mt-5"
                 >
                     Enviar
                 </Button>
