@@ -1,6 +1,30 @@
 version: '3.8'
 
 services:
+    api:
+        build:
+            context: ./api
+        ports:
+            - '8080:8080'
+        networks:
+            - pet-finder-network
+        volumes:
+            - ./volumes/api_data:/app/data
+        depends_on:
+            - postgres
+            - redis
+            - rabbitmq
+    embeddings:
+        build:
+            context: ./embedding-server
+        ports:
+            - '3333:3333'
+        networks:
+            - pet-finder-network
+        depends_on:
+            - qdrant
+            - rabbitmq
+
     redis:
         image: redis
         container_name: redis
@@ -44,6 +68,8 @@ services:
         ports:
             - '5672:5672'
             - '15672:15672'
+        networks:
+            - pet-finder-network
     kong:
         container_name: api-gateway
         image: kong:latest

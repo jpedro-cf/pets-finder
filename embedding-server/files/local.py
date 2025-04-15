@@ -7,7 +7,7 @@ from files.files_storage import FilesStorage
 
 class LocalFileStorage(FilesStorage):
     def __init__(self):
-        self.url = os.environ.get("BASE_IMAGES_URL")
+        self.url = os.environ.get("LOCAL_IMAGES_URL")
 
     def download_file(self, key) -> BytesIO:
         response = requests.get(f"{self.url}/{key}")

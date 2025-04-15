@@ -29,7 +29,7 @@ class QueueConsumer:
         while True:
             try:
                 self.connection = pika.BlockingConnection(
-                    pika.ConnectionParameters("localhost", heartbeat=60, port=5672)
+                    pika.ConnectionParameters(host="rabbitmq", heartbeat=60, port=5672)
                 )
                 self.channel = self.connection.channel()
                 self._setup_channel()

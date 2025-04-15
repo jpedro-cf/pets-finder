@@ -105,8 +105,8 @@ public class PetsService {
         List<SimilarPetsDTO> similarPets = cacheService.getValue(pet.getId().toString());
         if(similarPets == null || similarPets.size() < 4){
             // try to populate more data into redis
-            producer.produceRefreshRequest(new PetRefreshEventDTO(pet.getId().toString()));
         }
+        producer.produceRefreshRequest(new PetRefreshEventDTO(pet.getId().toString()));
 
         return similarPets != null ? similarPets : Collections.emptyList();
     }

@@ -28,7 +28,7 @@ public class RedisConfig {
     @Bean
     public LettuceConnectionFactory redisConnectionFactory(){
         return new LettuceConnectionFactory(
-                new RedisStandaloneConfiguration("localhost", 6379)
+                new RedisStandaloneConfiguration("redis", 6379)
         );
     }
 }

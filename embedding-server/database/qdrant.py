@@ -5,7 +5,7 @@ from qdrant_client.models import VectorParams, Distance, PointStruct
 
 class QdrantDatabase(VectorDatabase):
     def __init__(self):
-        self.client = QdrantClient("localhost", port=6333)
+        self.client = QdrantClient(url="http://qdrant:6333")
         self._setup()
 
     def search(self, collection, query, top_k, metadata):

@@ -1,3 +1,4 @@
+import os
 from files.files_storage import FilesStorage
 from files.local import LocalFileStorage
 from files.s3 import S3Client
@@ -8,6 +9,6 @@ class MainFilesStorage(FilesStorage):
         self.options = {"s3": S3Client(), "local": LocalFileStorage()}
 
     def download_file(self, key):
-        storage = self.options["local"]
+        storage = self.options[os.environ.get("STORAGE_TYPE")]
 
         return storage.download_file(key)

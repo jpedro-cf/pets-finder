@@ -8,7 +8,6 @@ pillow
 boto3
 pika
 python-dotenv
-redis
 fastapi
 uvicorn
 python-multipart

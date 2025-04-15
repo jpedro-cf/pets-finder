@@ -45,7 +45,5 @@ class QueueProducer:
         if self.connection and self.connection.is_open:
             return
 
-        self.connection = pika.BlockingConnection(
-            pika.ConnectionParameters("localhost")
-        )
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters("rabbitmq"))
         self.channel = self.connection.channel()
