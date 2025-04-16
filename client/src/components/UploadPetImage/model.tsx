@@ -30,6 +30,7 @@ export function useUploadPetImage() {
                 }
             })
         },
+        onError: () => setProgress('0%'),
     })
 
     const { mutate: requestImageSimilarity, isPending: similarityPending } =

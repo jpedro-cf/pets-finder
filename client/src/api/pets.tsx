@@ -31,7 +31,9 @@ interface SimilarityResult {
 
 export const PetsApi = {
     createPet: async (data: ICreatePet): Promise<IPet> => {
+        // not required, this is used only for progress animation
         await new Promise((resolve) => setTimeout(resolve, 1000))
+
         const res = await axiosInstance.post('/pets', data, {
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -43,6 +45,7 @@ export const PetsApi = {
     getPetById: async (id: string): Promise<IPet> => {
         // not required, this is used only for progress animation
         await new Promise((resolve) => setTimeout(resolve, 1000))
+
         const res = await axiosInstance.get(`/pets/${id}`)
         return res.data
     },
@@ -74,6 +77,7 @@ export const PetsApi = {
     ): Promise<SimilarityResult> => {
         // not required, this is used only for progress animation
         await new Promise((resolve) => setTimeout(resolve, 1000))
+
         const form = new FormData()
         form.append('text', data.text)
         if (data.image) {
