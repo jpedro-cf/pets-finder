@@ -54,9 +54,10 @@ class QueueConsumer:
     def process_pet_created(self, ch, method, properties, body):
         try:
             data = json.loads(body.decode("utf-8"))
+            print(data)
 
             pet_id = data.get("id")
-            request_id = data.get("requestId", None)
+            request_id = data.get("request_id", None)
             image_key = data.get("image")
             pet_type = data.get("type")
 
@@ -90,7 +91,7 @@ class QueueConsumer:
             self.producer.produce_pet_processed(
                 {
                     "id": pet_id,
-                    "requestId": request_id,
+                    "request_id": request_id,
                     "data": neighbours,
                     "description": description,
                 }
@@ -101,7 +102,7 @@ class QueueConsumer:
         except Exception as e:
             self.producer.produce_pet_error(
                 {
-                    "requestId": request_id,
+                    "request_id": request_id,
                     "id": pet_id,
                     "info": "Error occurred while creating pet",
                 }
