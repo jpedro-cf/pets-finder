@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 
 export function useAnimationProgress(percentage: string) {
     const [progress, animateProgress] = useAnimate()
+    console.log(percentage)
     const [paw, animatePaw] = useAnimate()
 
     useEffect(() => {
@@ -15,7 +16,7 @@ export function useAnimationProgress(percentage: string) {
     async function doAnimation() {
         await animateProgress(
             progress.current,
-            { width: percentage },
+            { width: percentage, height: '3px' },
             {
                 type: 'tween',
             }

@@ -22,9 +22,11 @@ import {
     DragDropFileInfo,
     DragDropImagePreview,
 } from '@/components/DragDrop'
+import { ProgressAnimation } from '@/components/ProgressAnimation'
 
 export function CreatePetForm() {
-    const { form, isPending, handleSubmit, handleFileSelect } = useCreatePet()
+    const { form, pending, handleSubmit, handleFileSelect, progress } =
+        useCreatePet()
     return (
         <Form {...form}>
             <form
@@ -43,7 +45,9 @@ export function CreatePetForm() {
                         >
                             <DragDropContent />
                             <DragDropImagePreview />
-                            <DragDropFileInfo className="absolute z-10 overflow-hidden py-1 block w-[90%] m-5 bottom-0 bg-emerald-50" />
+                            <DragDropFileInfo className="absolute z-10 overflow-hidden py-1 block w-[90%] m-5 bottom-0 bg-emerald-50">
+                                <ProgressAnimation percentage={progress} />
+                            </DragDropFileInfo>
                         </DragDropComponent>
                     )}
                 />
@@ -109,10 +113,10 @@ export function CreatePetForm() {
                     />
                     <Button
                         type="submit"
-                        disabled={isPending}
+                        disabled={pending}
                         className="md:col-span-2 mt-4"
                     >
-                        {isPending ? 'Enviando...' : 'Cadastrar Pet'}
+                        {pending ? 'Enviando...' : 'Cadastrar Pet'}
                     </Button>
                 </div>
             </form>

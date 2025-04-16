@@ -6,6 +6,7 @@ export interface ICreatePet {
     type: string
     location: string
     image: File
+    requestId: string
 }
 
 export interface IListPets {
@@ -30,6 +31,7 @@ interface SimilarityResult {
 
 export const PetsApi = {
     createPet: async (data: ICreatePet): Promise<IPet> => {
+        await new Promise((resolve) => setTimeout(resolve, 1000))
         const res = await axiosInstance.post('/pets', data, {
             headers: {
                 'Content-Type': 'multipart/form-data',
