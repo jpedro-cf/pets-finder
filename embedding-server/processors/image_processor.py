@@ -10,7 +10,7 @@ class ImageProcessor:
         self.client = genai.Client(api_key=os.environ["GOOGLE_API_KEY"])
 
     def describe_image(self, image_bytes: BytesIO) -> str:
-        return "Gerado por I.A"
+        # return "Gerado por I.A"
         img = Image.open(image_bytes)
         response = self.client.models.generate_content(
             model="gemini-2.0-flash",
