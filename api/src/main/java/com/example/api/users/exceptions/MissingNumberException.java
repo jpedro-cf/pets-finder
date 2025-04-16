@@ -10,7 +10,7 @@ public class MissingNumberException extends ApplicationException {
     }
     @Override
     public ProblemDetail toProblemDetail(){
-        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
 
         problem.setTitle("Missing number in profile.");
         problem.setDetail(this.getMessage());

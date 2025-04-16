@@ -46,7 +46,7 @@ public class AuthService implements UserDetailsService {
 
         Optional<UserEntity> user = usersRepository.findById(UUID.fromString(userId));
         if(user.isEmpty()){
-            throw new UnauthorizedException("Usuário inválido.");
+            throw new NotFoundException("Usuário inválido.");
         }
 
         return this.jwtService.generateAccessToken(user.get());

@@ -54,6 +54,7 @@ public class SecurityConfig{
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/auth/refresh").permitAll()
                         .requestMatchers(HttpMethod.GET, "/pets").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/pets/sse").permitAll()
                         .requestMatchers(HttpMethod.GET, "/pets/image/{filename}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/pets/{id}").permitAll()
                         .anyRequest().authenticated())

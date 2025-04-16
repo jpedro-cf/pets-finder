@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+// This is probably not necessary, I did this just for study purposes
 @Component
 public class SSEConnections {
     private static final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();

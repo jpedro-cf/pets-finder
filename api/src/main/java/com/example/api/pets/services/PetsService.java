@@ -1,6 +1,8 @@
 package com.example.api.pets.services;
 
 import com.example.api.data.cache.CacheService;
+import com.example.api.data.connections.SSEConnections;
+import com.example.api.data.connections.SSEMessageDTO;
 import com.example.api.data.exceptions.ApplicationException;
 import com.example.api.data.exceptions.NotFoundException;
 import com.example.api.data.storage.MainStorageService;
@@ -38,17 +40,19 @@ public class PetsService {
     private CacheService<SimilarPetsDTO> cacheService;
     @Autowired
     private CreatePetRequestValidator validator;
+    @Autowired
+    private SSEConnections connections;
 
     private final Logger logger = LoggerFactory.getLogger(PetsService.class);
 
     public PetEntity create(CreatePetDTO data, UserEntity user) {
         validator.validate(new CreatePetValidation(data, user));
 
-
         Optional<String> image = storageService.store(data.image(), Map.of("expire", "false"));
         if(image.isEmpty()){
             throw new ApplicationException("Falha ao fazer upload da imagem.");
         }
+
         PetEntity pet = new PetEntity();
         pet.setColor(data.color());
         pet.setImage(image.get());
@@ -60,7 +64,9 @@ public class PetsService {
 
         repository.save(pet);
 
-        producer.producePetCreated(pet, data.requestId());
+        producer.producePetCreated(pet, Optional.ofNullable(data.requestId()));
+
+        connections.sendMessage(new SSEMessageDTO(data.requestId(), "pet_created", pet.getId()));
 
         return pet;
     }
@@ -105,8 +111,8 @@ public class PetsService {
         List<SimilarPetsDTO> similarPets = cacheService.getValue(pet.getId().toString());
         if(similarPets == null || similarPets.size() < 4){
             // try to populate more data into redis
+            producer.produceRefreshRequest(new PetRefreshEventDTO(pet.getId().toString()));
         }
-        producer.produceRefreshRequest(new PetRefreshEventDTO(pet.getId().toString()));
 
         return similarPets != null ? similarPets : Collections.emptyList();
     }
