@@ -1,6 +1,6 @@
-import { useSearch } from '@/components/Forms/SearchForm/searchFormModel'
-import { usePetsList } from '@/components/PetsList/petsListModel'
-import { useUploadPetImage } from '@/components/UploadPetImage/uploadPetImageModel'
+import { useSearch } from '@/components/Forms/SearchForm/model'
+import { usePetsList } from '@/components/PetsList/model'
+import { useUploadPetImage } from '@/components/UploadPetImage/model'
 import { useDialogStore } from '@/hooks/useDialog'
 
 export function useHome() {

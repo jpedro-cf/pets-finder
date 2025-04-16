@@ -8,7 +8,7 @@ import { PetsList } from '@/components/PetsList'
 import { Button } from '@/components/ui/button'
 import { UploadPetImage } from '@/components/UploadPetImage'
 import { Dog } from 'lucide-react'
-import { useHome } from './homeModel'
+import { useHome } from './model'
 import { Dialogs } from '@/types/dialogs'
 const scrollBar =
     '[&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-primary/70 '

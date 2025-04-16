@@ -1,11 +1,7 @@
 import { Card, CardContent } from '../ui/card'
 import { cva } from 'class-variance-authority'
 import { cn, formatFileSize } from '@/lib/utils'
-import {
-    DragDropContext,
-    useDragDrop,
-    useDragDropContext,
-} from './dragDropModel'
+import { DragDropContext, useDragDrop, useDragDropContext } from './model'
 import { Button } from '../ui/button'
 import { CloudUpload, Image, Trash } from 'lucide-react'
 import { createContext, ReactNode, useEffect, useState } from 'react'

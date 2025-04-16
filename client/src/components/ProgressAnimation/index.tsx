@@ -1,5 +1,5 @@
 import { motion } from 'motion/react'
-import { useAnimationProgress } from './progressAnimationModel'
+import { useAnimationProgress } from './model'
 import { PawPrint } from 'lucide-react'
 
 interface ProgressAnimationProps {

@@ -1,6 +1,3 @@
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
 import {
     Form,
     FormControl,
@@ -11,39 +8,10 @@ import {
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { formatPhoneNumber } from '@/lib/utils'
-import { useDialogStore } from '@/hooks/useDialog'
-import { Dialogs } from '@/types/dialogs'
-import { UsersApi } from '@/api/users'
-import { useMutation } from '@tanstack/react-query'
+import { useRegistration } from './model'
 
-const registerFormSchema = z.object({
-    name: z.string().min(1),
-    email: z.string().min(1).email(),
-    number: z
-        .string()
-        .min(3)
-        .transform((element) => {
-            return element.replace(/\D/g, '')
-        }),
-    password: z.string().min(1),
-})
 export function RegisterForm() {
-    const { mutate: registerUser, isPending: isRegistering } = useMutation({
-        mutationFn: UsersApi.register,
-    })
-    const form = useForm<z.infer<typeof registerFormSchema>>({
-        resolver: zodResolver(registerFormSchema),
-    })
-    const { closeDialog, openDialog } = useDialogStore()
-
-    function handleSubmit(values: z.infer<typeof registerFormSchema>) {
-        registerUser(values, {
-            onSuccess: () => {
-                closeDialog(Dialogs.REGISTER)
-                openDialog(Dialogs.LOGIN, null)
-            },
-        })
-    }
+    const { form, handleSubmit, isPending } = useRegistration()
 
     return (
         <Form {...form}>
@@ -119,7 +87,7 @@ export function RegisterForm() {
                     )}
                 />
                 <Button
-                    disabled={isRegistering}
+                    disabled={isPending}
                     type="submit"
                     size={'lg'}
                     className="w-full sm:col-span-2 mt-5"

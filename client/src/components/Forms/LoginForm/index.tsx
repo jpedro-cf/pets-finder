@@ -1,6 +1,3 @@
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
 import {
     Form,
     FormControl,
@@ -10,35 +7,12 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { useDialogStore } from '@/hooks/useDialog'
 import { Dialogs } from '@/types/dialogs'
-import { useMutation } from '@tanstack/react-query'
-import { UsersApi } from '@/api/users'
-import { useAuth } from '@/hooks/useAuth'
+import { useLogin } from './model'
 
-const loginFormSchema = z.object({
-    email: z.string().min(1).email(),
-    password: z.string().min(1),
-})
 export function LoginForm() {
-    const { setToken } = useAuth()
-    const { mutate: authenticateUser, isPending: isAuthenticating } =
-        useMutation({
-            mutationFn: UsersApi.login,
-            onSuccess: (data) => {
-                setToken(data.access_token)
-            },
-        })
-    const form = useForm<z.infer<typeof loginFormSchema>>({
-        resolver: zodResolver(loginFormSchema),
-    })
-    const { closeDialog, openDialog } = useDialogStore()
+    const { form, handleSubmit, isAuthenticating, openDialog } = useLogin()
 
-    function handleSubmit(values: z.infer<typeof loginFormSchema>) {
-        authenticateUser(values, {
-            onSuccess: () => closeDialog(Dialogs.LOGIN),
-        })
-    }
     return (
         <Form {...form}>
             <form

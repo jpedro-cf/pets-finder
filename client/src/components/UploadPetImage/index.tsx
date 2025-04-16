@@ -5,7 +5,7 @@ import {
     DragDropImagePreview,
 } from '../DragDrop'
 import { ProgressAnimation } from '../ProgressAnimation'
-import { useUploadPetImage } from './uploadPetImageModel'
+import { useUploadPetImage } from './model'
 
 type Props = ReturnType<typeof useUploadPetImage>
 export function UploadPetImage(data: Props) {

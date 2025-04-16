@@ -20,6 +20,7 @@ export function PersistAuth() {
     useEffect(() => {
         fetchMe()
     }, [token])
+
     if (loading) {
         return <div>loading....</div>
     }

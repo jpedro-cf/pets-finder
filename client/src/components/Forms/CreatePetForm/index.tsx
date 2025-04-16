@@ -15,7 +15,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
-import { useCreatePet } from './createPetModel'
+import { useCreatePet } from './model'
 import {
     DragDropComponent,
     DragDropContent,

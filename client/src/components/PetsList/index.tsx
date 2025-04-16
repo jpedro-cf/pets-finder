@@ -4,7 +4,7 @@ import {
     PetCardImage,
     PetsCard,
 } from '../PetsCard'
-import { usePetsList } from './petsListModel'
+import { usePetsList } from './model'
 import { PetsCardSkeleton } from '../PetsCard/skeleton'
 import React from 'react'
 const scrollBar = '[&::-webkit-scrollbar]:w-0 '
