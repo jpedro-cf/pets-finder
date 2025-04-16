@@ -60,6 +60,14 @@ cors.urls=...
 ```
 
 -   `jwt.private.key` and `jwt.public.key` point to the RSA keys used for authentication via JWT.
+
+    ```
+        cd ./api/src/main/resources
+
+        openssl genrsa -out app.key
+        openssl rsa -in app.key -pubout -out app.pub
+    ```
+
 -   `app.files.folder` sets the local path where uploaded files will be stored if not using S3.
 -   The AWS section configures integration with Amazon S3 (if `STORAGE_TYPE` is set to `s3`).
 -   `cors.urls` should list allowed domains for CORS requests (comma-separated).
